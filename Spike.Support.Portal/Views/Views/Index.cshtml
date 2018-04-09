@@ -7,27 +7,28 @@
     <h1>DAS Support - Navigation Spike</h1>
     <span>Provides an architectural alternative for Site-Site collaboration and composite UI delivery.</span>
 </div>
+@if (Model.UsersView != null)
+{
+    <div class="card text-white bg-dark">
+        <div class="card-header">User results</div>
+        <div class="card-body">
 
-<div class="card text-white bg-dark">
-    <div class="card-header">User search</div>
-    <div class="card-body">
-        @{
-            if (Model.UsersView != null)
-            {
-                @Html.Raw(Model.UsersView)
-            }
-        }
+            @Html.Raw(Model.UsersView)
+
+
+        </div>
     </div>
-</div>
-<hr />
-<div class="card text-white bg-dark mb-3">
-    <div class="card-header">Account search</div>
-    <div class="card-body">
-        @{
-            if (Model.AccountsView != null)
-            {
-                @Html.Raw(Model.AccountsView)
-            }
-        }
-    </div>
-</div>
+    <hr />
+}
+@if (Model.AccountsView != null)
+{
+    <div class="card text-white bg-dark mb-3">
+        <div class="card-header">Account results</div>
+        <div class="card-body">
+
+
+            @Html.Raw(Model.AccountsView)
+
+
+        </div>
+    </div>      }
