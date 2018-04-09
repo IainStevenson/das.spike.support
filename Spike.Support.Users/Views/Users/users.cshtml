@@ -1,0 +1,29 @@
+﻿@model Spike.Support.Users.Models.UsersViewModel
+<h2>Users</h2>
+<div class="container">
+    @foreach (var item in Model.Users)
+    {
+        if (item.AccountId == Model.Users.First().AccountId)
+        {
+            <div class="row">
+                <div class="col-md-3">
+                    @Html.LabelFor(model => item.UserId)
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => item.AccountId)
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => item.UserName)
+                </div>
+                <div class="col-md-3">
+                    @Html.LabelFor(model => item.Created)
+                </div>
+            </div>
+        }
+        <div class="row">
+            @{
+                Html.RenderPartial("_user", item);
+            }
+        </div>
+    }
+</div>

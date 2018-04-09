@@ -1,30 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
+using Spike.Support.Portal.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        private string _usersBaseAddress = "https://localhost:44309/";
+        private string _accountsBaseAddress = "https://localhost:44317/";
+        private readonly ISiteConnector _siteConnector;
+
+        public HomeController()
         {
-            return View();
+            _siteConnector = new SiteConnector();
         }
 
-        public ActionResult About()
+        [Route("")]
+        public async Task<ActionResult> Index()
         {
-            ViewBag.Message = "Your application description page.";
 
-            return View();
+            // OK.... here we go.
+            // Make download calls to Users, Accounts, Accounts will ask for a Download roundtrip for Payements.. by Account
+            var usersView = await _siteConnector.DownloadView(_usersBaseAddress, "users");
+            var accountsView = await _siteConnector.DownloadView(_accountsBaseAddress, "accounts");
+            var indexViewModel = new IndexViewModel()
+            {
+                UsersView = usersView,
+                AccountsView = accountsView
+            };
+
+
+            return View("index", indexViewModel);
         }
 
-        public ActionResult Contact()
+        [Route("{view}/{id}")]
+        public async Task<ActionResult> Index(string view , object id)
         {
-            ViewBag.Message = "Your contact page.";
 
-            return View();
+            // OK.... here we go.
+            // Make download calls to Users, Accounts, Accounts will ask for a Download roundtrip for Payements.. by Account
+            var usersView = await _siteConnector.DownloadView(_usersBaseAddress, (view.Equals("users")? $"users/{id}": $"users"));
+            var accountsView = await _siteConnector.DownloadView(_accountsBaseAddress, (view.Equals("accounts")? $"accounts/{id}": $"accounts"));
+            var indexViewModel = new IndexViewModel()
+            {
+                UsersView = usersView,
+                AccountsView = accountsView
+            };
+            indexViewModel.AccountsView = (view.Equals("accounts") ? accountsView : null);
+            indexViewModel.UsersView = (view.Equals("users") ? usersView: null);
+
+            return View("index", indexViewModel);
         }
     }
 }

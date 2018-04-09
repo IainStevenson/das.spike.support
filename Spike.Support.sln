@@ -5,6 +5,16 @@ VisualStudioVersion = 15.0.27428.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Support.Portal", "Spike.Support.Portal\Spike.Support.Portal.csproj", "{9C294DB5-5533-4167-977A-CF5130A66165}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Support.Users", "Spike.Support.Users\Spike.Support.Users.csproj", "{9F6EEFD0-E5CF-499C-8653-0D160F72F0EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Support.Accounts", "Spike.Support.Accounts\Spike.Support.Accounts.csproj", "{E4520A1E-C993-4EFA-AD7C-D9EC9B51A714}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Support.Payments", "Spike.Support.Payments\Spike.Support.Payments.csproj", "{5352FABA-8F96-47DD-B342-A8A46832A436}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Portal", "Portal", "{524E6EA0-BC1E-4223-A9C9-0FBCBA71FB61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{B8A4D390-ED21-4CC3-AF4F-77AD0A8F297E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +25,27 @@ Global
 		{9C294DB5-5533-4167-977A-CF5130A66165}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C294DB5-5533-4167-977A-CF5130A66165}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C294DB5-5533-4167-977A-CF5130A66165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F6EEFD0-E5CF-499C-8653-0D160F72F0EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F6EEFD0-E5CF-499C-8653-0D160F72F0EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F6EEFD0-E5CF-499C-8653-0D160F72F0EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F6EEFD0-E5CF-499C-8653-0D160F72F0EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4520A1E-C993-4EFA-AD7C-D9EC9B51A714}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4520A1E-C993-4EFA-AD7C-D9EC9B51A714}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4520A1E-C993-4EFA-AD7C-D9EC9B51A714}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4520A1E-C993-4EFA-AD7C-D9EC9B51A714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5352FABA-8F96-47DD-B342-A8A46832A436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5352FABA-8F96-47DD-B342-A8A46832A436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5352FABA-8F96-47DD-B342-A8A46832A436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5352FABA-8F96-47DD-B342-A8A46832A436}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9C294DB5-5533-4167-977A-CF5130A66165} = {524E6EA0-BC1E-4223-A9C9-0FBCBA71FB61}
+		{9F6EEFD0-E5CF-499C-8653-0D160F72F0EF} = {B8A4D390-ED21-4CC3-AF4F-77AD0A8F297E}
+		{E4520A1E-C993-4EFA-AD7C-D9EC9B51A714} = {B8A4D390-ED21-4CC3-AF4F-77AD0A8F297E}
+		{5352FABA-8F96-47DD-B342-A8A46832A436} = {B8A4D390-ED21-4CC3-AF4F-77AD0A8F297E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15041D0F-CC95-4110-AD18-140900959C80}
