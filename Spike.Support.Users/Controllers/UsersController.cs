@@ -37,5 +37,16 @@ namespace Spike.Support.Users.Controllers
                 }
             });
         }
+
+
+
+        [Route("users/accounts/{id:int}")]
+        public ActionResult AccountUsers(int id)
+        {
+            return View("users", new UsersViewModel
+            {
+                Users = _usersViewModel.Users.Where(x => x.AccountId == id).ToList()
+            });
+        }
     }
 }

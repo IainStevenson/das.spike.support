@@ -7,5 +7,6 @@ namespace Spike.Support.Accounts.Models
         public AccountViewModel Account { get; set; }
 
         public MvcHtmlString PaymentsView { get; set; }
+        public MvcHtmlString UsersView { get; set; }
     }
 }

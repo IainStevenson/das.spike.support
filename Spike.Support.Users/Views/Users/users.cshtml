@@ -1,6 +1,13 @@
 ﻿@model Spike.Support.Users.Models.UsersViewModel
-<h2>Users</h2>
+
 <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <hr />
+            <h4>Users</h4>
+            <hr />
+        </div>
+    </div>
     @foreach (var item in Model.Users)
     {
         if (item.AccountId == Model.Users.First().AccountId)

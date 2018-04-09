@@ -20,11 +20,17 @@ namespace Spike.Support.Payments.Controllers
         [Route("payments/{id:guid}")]
         public ActionResult Index(Guid id)
         {
-            return View("payments", new PaymentsViewModel() { Payments = new List<PaymentViewModel>() { _paymentsViewModels.Payments.FirstOrDefault(x => x.PaymentId == id) } });
+            return View("payments", new PaymentsViewModel()
+            {
+                Payments = new List<PaymentViewModel>()
+                {
+                    _paymentsViewModels.Payments.FirstOrDefault(x => x.PaymentId == id)
+                }
+            });
         }
 
-        [Route("payments/account/{id:int}")]
-        public ActionResult Index(int id)
+        [Route("payments/accounts/{id:int}")]
+        public ActionResult AccountPayments(int id)
         {
             return View("payments", new PaymentsViewModel()
             {
