@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
+using Spike.Support.Shared;
 
 namespace Spike.Support.Accounts.Controllers
 {
@@ -17,6 +19,15 @@ namespace Spike.Support.Accounts.Controllers
         };
 
 
+        private readonly ISiteConnector _siteConnector;
+        private string _portalAddress = "https://localhost:44394/";
+
+
+        public AccountsController()
+        {
+            _siteConnector = new SiteConnector();
+        }
+
         [Route("")]
         [Route("accounts")]
         public ActionResult Index()
@@ -25,9 +36,18 @@ namespace Spike.Support.Accounts.Controllers
         }
 
         [Route("accounts/{id:int}")]
-        public ActionResult Index(int id)
+        public async Task<ActionResult> Index(int id)
         {
-            return View("accounts", new AccountsViewModel(){ Accounts =  new List<AccountViewModel>() { _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id) } });
+            var mvcHtmlString = await _siteConnector.DownloadResource<string>( new Uri(_portalAddress), $"resources/resource/payments/account/{id}" );
+
+            mvcHtmlString = mvcHtmlString.Replace(@"\r\n", string.Empty);
+            var accountDetailViewModel = new AccountDetailViewModel()
+            {
+                Account =  _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
+                PaymentsView = new MvcHtmlString(mvcHtmlString)
+            };
+
+            return View("_accountDetails", accountDetailViewModel);
         }
 
     }

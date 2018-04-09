@@ -146,6 +146,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AccountDetailViewModel.cs" />
     <Compile Include="Models\AccountsViewModel.cs" />
     <Compile Include="Models\AccountViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -186,6 +187,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Accounts\accounts.cshtml" />
     <Content Include="Views\Accounts\_account.cshtml" />
+    <Content Include="Views\Accounts\_accountDetails.cshtml" />
+    <Content Include="Views\Accounts\_accountDetailPayments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -202,6 +205,12 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Spike.Support.Shared\Spike.Support.Shared.csproj">
+      <Project>{6390bd36-7c9e-4e36-b9ae-af3b624f9a91}</Project>
+      <Name>Spike.Support.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

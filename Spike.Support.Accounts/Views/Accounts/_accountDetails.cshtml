@@ -1,0 +1,14 @@
+﻿@model Spike.Support.Accounts.Models.AccountDetailViewModel
+<div class="row">
+
+    <div class="col-md-4">
+        @Html.DisplayTextFor(model => model.Account.AccountId)
+    </div>
+    <div class="col-md-4">
+        <a href="~/views/view/accounts/@Model.Account.AccountId">@Html.DisplayTextFor(model => model.Account.AccountName)</a>
+    </div>
+    <div class="col-md-4">
+        @Html.DisplayTextFor(model => model.Account.Created)
+    </div>
+</div>
+@{ Html.RenderPartial("_accountDetailPayments", Model.PaymentsView); }

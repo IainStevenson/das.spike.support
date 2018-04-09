@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Mvc;
-using Spike.Support.Portal.Models;
+using Spike.Support.Shared;
 
 namespace Spike.Support.Portal.Controllers
 {
@@ -25,14 +24,22 @@ namespace Spike.Support.Portal.Controllers
             _siteConnector = new SiteConnector();
         }
 
-        [System.Web.Http.Route("resources/{source}/{resource}")]
-        public async Task<MvcHtmlString> Get(string source, string resource)
+        [System.Web.Http.Route("resources/resource/{*path}")]
+        public async Task<string> Get(string path)
         {
+            var source = path.Split('/').FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(source)) return string.Empty;
+
+
             if (_addresses.Keys.FirstOrDefault(x => x == source) == null)
-                return await Task.Run(() => new MvcHtmlString(string.Empty));
+                return await Task.Run(() => string.Empty);
 
             var resourceAddress = _addresses[source];
-            return await  _siteConnector.DownloadView(resourceAddress, $"{source}/{resource}");
+
+            var resource = await  _siteConnector.DownloadResource<string>(resourceAddress, $"{path}");
+
+            return resource;
             
         }
     }

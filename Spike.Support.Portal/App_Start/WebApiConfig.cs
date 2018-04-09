@@ -14,6 +14,13 @@ namespace Spike.Support.Portal
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+
+            config.Routes.MapHttpRoute(
+                name: "ResourcesApi",
+                routeTemplate: "api/resources/resource/{*path}",
+                defaults: new { controller = "Resources", action = "Index", source = string.Empty });
+
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",

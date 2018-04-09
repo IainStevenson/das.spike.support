@@ -9,11 +9,16 @@ namespace Spike.Support.Portal
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.MapMvcAttributeRoutes();
+            routes.MapRoute(
+                "Views",
+                 "{controller}/view/{*path}",
+                new { controller = "Views", action = "Index", source = string.Empty }
+            );
 
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Views", action = "Index", id = UrlParameter.Optional }
             );
         }
     }
