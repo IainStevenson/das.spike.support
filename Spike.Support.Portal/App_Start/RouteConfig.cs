@@ -14,7 +14,10 @@ namespace Spike.Support.Portal
                  "{controller}/view/{*path}",
                 new { controller = "Views", action = "Index", source = string.Empty }
             );
-
+            routes.MapRoute(
+                "ResourcesApi",
+                "resources/resource/{*path}",
+                 new {controller = "Resources", action = "Index", source = string.Empty});
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

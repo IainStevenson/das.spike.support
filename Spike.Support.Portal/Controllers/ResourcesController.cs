@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
+using System.Web.Mvc;
 using Spike.Support.Shared;
 
 namespace Spike.Support.Portal.Controllers
 {
-    public class ResourcesController : ApiController
+    public class ResourcesController : Controller
     {
 
         private readonly Dictionary<string, Uri> _addresses = new Dictionary<string, Uri>()
@@ -24,20 +24,20 @@ namespace Spike.Support.Portal.Controllers
             _siteConnector = new SiteConnector();
         }
 
-        [System.Web.Http.Route("resources/resource/{*path}")]
-        public async Task<string> Get(string path)
+        [Route("resources/resource/{*path}")]
+        public async Task<MvcHtmlString> Get(string path)
         {
             var source = path.Split('/').FirstOrDefault();
 
-            if (string.IsNullOrWhiteSpace(source)) return string.Empty;
+            if (string.IsNullOrWhiteSpace(source)) return new MvcHtmlString (string.Empty);
 
 
             if (_addresses.Keys.FirstOrDefault(x => x == source) == null)
-                return await Task.Run(() => string.Empty);
+                return await Task.Run(() => new MvcHtmlString(string.Empty));
 
             var resourceAddress = _addresses[source];
 
-            var resource = await  _siteConnector.DownloadResource<string>(resourceAddress, $"{path}");
+            MvcHtmlString resource = await _siteConnector.DownloadView(resourceAddress, $"{path}");
 
             return resource;
             

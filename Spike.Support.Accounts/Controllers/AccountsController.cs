@@ -38,13 +38,12 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}")]
         public async Task<ActionResult> Index(int id)
         {
-            var mvcHtmlString = await _siteConnector.DownloadResource<string>( new Uri(_portalAddress), $"resources/resource/payments/account/{id}" );
+            var mvcHtmlString = await _siteConnector.DownloadView( new Uri(_portalAddress), $"resources/resource/payments/account/{id}" );
 
-            mvcHtmlString = mvcHtmlString.Replace(@"\r\n", string.Empty);
             var accountDetailViewModel = new AccountDetailViewModel()
             {
                 Account =  _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
-                PaymentsView = new MvcHtmlString(mvcHtmlString)
+                PaymentsView = mvcHtmlString
             };
 
             return View("_accountDetails", accountDetailViewModel);
