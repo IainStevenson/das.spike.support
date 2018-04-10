@@ -9,12 +9,11 @@ namespace Spike.Support.Portal.Controllers
 {
     public class ResourcesController : Controller
     {
-
-        private readonly Dictionary<string, Uri> _addresses = new Dictionary<string, Uri>()
+        private readonly Dictionary<string, Uri> _addresses = new Dictionary<string, Uri>
         {
             {"accounts", new Uri("https://localhost:44317/")},
             {"users", new Uri("https://localhost:44309/")},
-            {"payments", new Uri("https://localhost:44345/")},
+            {"payments", new Uri("https://localhost:44345/")}
         };
 
         private readonly ISiteConnector _siteConnector;
@@ -29,7 +28,7 @@ namespace Spike.Support.Portal.Controllers
         {
             var source = path.Split('/').FirstOrDefault();
 
-            if (string.IsNullOrWhiteSpace(source)) return new MvcHtmlString (string.Empty);
+            if (string.IsNullOrWhiteSpace(source)) return new MvcHtmlString(string.Empty);
 
 
             if (_addresses.Keys.FirstOrDefault(x => x == source) == null)
@@ -37,10 +36,9 @@ namespace Spike.Support.Portal.Controllers
 
             var resourceAddress = _addresses[source];
 
-            MvcHtmlString resource = await _siteConnector.DownloadView(resourceAddress, $"{path}");
+            var resource = await _siteConnector.DownloadView(resourceAddress, $"{path}");
 
             return resource;
-            
         }
     }
 }

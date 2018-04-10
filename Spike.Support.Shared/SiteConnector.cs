@@ -1,9 +1,7 @@
 ﻿using System;
-using System.CodeDom;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using Newtonsoft.Json;
 
 namespace Spike.Support.Shared
 {
@@ -25,6 +23,7 @@ namespace Spike.Support.Shared
             {
                 Console.WriteLine(e);
             }
+
             return new MvcHtmlString(content);
         }
 
@@ -44,6 +43,7 @@ namespace Spike.Support.Shared
             {
                 Console.WriteLine(e);
             }
+
             return new MvcHtmlString(content);
         }
 
@@ -75,7 +75,5 @@ namespace Spike.Support.Shared
 
         //    return JsonConvert.DeserializeObject<T>(content);
         //}
-
-
     }
 }

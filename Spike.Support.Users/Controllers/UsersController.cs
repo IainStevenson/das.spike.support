@@ -39,7 +39,6 @@ namespace Spike.Support.Users.Controllers
         }
 
 
-
         [Route("users/accounts/{id:int}")]
         public ActionResult AccountUsers(int id)
         {

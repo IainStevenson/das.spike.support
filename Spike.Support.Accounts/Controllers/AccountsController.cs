@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -10,17 +9,20 @@ namespace Spike.Support.Accounts.Controllers
 {
     public class AccountsController : Controller
     {
-        private readonly AccountsViewModel _accountViewModels =  new AccountsViewModel()
+        private readonly AccountsViewModel _accountViewModels = new AccountsViewModel
         {
-            Accounts = Enumerable.Range(1, 10).Select(x => 
-                new AccountViewModel { AccountId = x,
+            Accounts = Enumerable.Range(1, 10).Select(x =>
+                new AccountViewModel
+                {
+                    AccountId = x,
                     Created = DateTime.Now.AddMonths(-x),
-                    AccountName = $"Account {x}" }).ToList()
+                    AccountName = $"Account {x}"
+                }).ToList()
         };
 
 
         private readonly ISiteConnector _siteConnector;
-        private string _portalAddress = "https://localhost:44394/";
+        private readonly string _portalAddress = "https://localhost:44394/";
 
 
         public AccountsController()
@@ -38,18 +40,19 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}")]
         public async Task<ActionResult> Index(int id)
         {
-            var paymentsView = await _siteConnector.DownloadView(new Uri(_portalAddress), $"resources/resource/payments/accounts/{id}");
-            var usersView = await _siteConnector.DownloadView(new Uri(_portalAddress), $"resources/resource/users/accounts/{id}/");
+            var paymentsView = await _siteConnector.DownloadView(new Uri(_portalAddress),
+                $"resources/resource/payments/accounts/{id}");
+            var usersView =
+                await _siteConnector.DownloadView(new Uri(_portalAddress), $"resources/resource/users/accounts/{id}/");
 
-            var accountDetailViewModel = new AccountDetailViewModel()
+            var accountDetailsViewModel = new AccountDetailViewModel
             {
-                Account =  _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
+                Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
                 PaymentsView = paymentsView,
                 UsersView = usersView
             };
 
-            return View("_accountDetails", accountDetailViewModel);
+            return View("_accountDetails", accountDetailsViewModel);
         }
-
     }
 }
