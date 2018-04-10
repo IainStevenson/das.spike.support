@@ -8,8 +8,17 @@ namespace Spike.Support.Payments.Controllers
 {
     public class PaymentsController : Controller
     {
-        private readonly PaymentsViewModel _paymentsViewModels = new PaymentsViewModel() { Payments = Enumerable.Range(1, 10).Select(x => new PaymentViewModel { AccountId = x, PaymentId = Guid.NewGuid(), Created = DateTime.Now.AddMonths(-x), Amount = (x * 1000) }).ToList() };
+        private readonly PaymentsViewModel _paymentsViewModels ;
 
+
+        public PaymentsController()
+        {
+            _paymentsViewModels = new PaymentsViewModel()
+            {
+                Payments = Enumerable.Range(1, 1000).Select(x => 
+                    new PaymentViewModel { AccountId = x % 100, PaymentId = Guid.NewGuid(), Created = DateTime.Now.AddMonths(-x), Amount = (x * 1000) }).ToList()
+            };
+        }
         [Route("")]
         [Route("payments")]
         public ActionResult Index()
@@ -32,7 +41,7 @@ namespace Spike.Support.Payments.Controllers
         [Route("payments/accounts/{id:int}")]
         public ActionResult AccountPayments(int id)
         {
-            return View("payments", new PaymentsViewModel()
+            return View("_accountPaymentDetails", new PaymentsViewModel()
             {
                 Payments = _paymentsViewModels.Payments.Where(x => x.AccountId == id).ToList()
             });

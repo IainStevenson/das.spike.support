@@ -7,9 +7,10 @@
             <hr />
         </div>
     </div>
+
     @foreach (var item in Model.Payments)
     {
-        if (item.AccountId == Model.Payments.First().AccountId)
+        if (item.PaymentId == Model.Payments.First().PaymentId)
         {
             <div class="row">
                 <div class="col-md-3">
@@ -25,7 +26,7 @@
                     @Html.LabelFor(model => item.Amount)
                 </div>
             </div>
-        }
+        }   
         <div class="row">
             @{
                 Html.RenderPartial("_payment", item);
@@ -33,3 +34,4 @@
         </div>
     }
 </div>
+
