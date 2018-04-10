@@ -42,6 +42,12 @@ namespace Spike.Support.Accounts.Controllers
         {
             var paymentsView = await _siteConnector.DownloadView(new Uri(_portalAddress),
                 $"resources/payments/accounts/{id}");
+
+            if (_siteConnector.Reason.StartsWith("Challenge"))
+            {
+                return new HttpUnauthorizedResult(_siteConnector.Reason);
+            }
+
             var usersView =
                 await _siteConnector.DownloadView(new Uri(_portalAddress), $"resources/users/accounts/{id}/");
 

@@ -9,6 +9,7 @@ namespace Spike.Support.Shared
         Task<MvcHtmlString> DownloadView(string baseUrl, string uri);
 
         Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri);
-        // Task<T> DownloadResource<T>(Uri resourceAddress, string uri) where T: class; 
+        string Reason { get; set; }
+        Task Submit(Uri resourceAddress, string uri , string body);
     }
 }

@@ -151,6 +151,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Models\ChallengeViewModel.cs" />
     <Compile Include="Controllers\ViewsController.cs" />
     <Compile Include="Controllers\ResourcesController.cs" />
     <Compile Include="Models\IndexViewModel.cs" />
@@ -195,6 +196,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Views\Index.cshtml" />
+    <Content Include="Views\Views\Challenge.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
