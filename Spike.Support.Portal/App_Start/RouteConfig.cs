@@ -11,12 +11,12 @@ namespace Spike.Support.Portal
             routes.MapMvcAttributeRoutes();
             routes.MapRoute(
                 "Views",
-                "{controller}/view/{*path}",
+                "{controller}/{*path}",
                 new {controller = "Views", action = "Index", source = string.Empty}
             );
             routes.MapRoute(
                 "ResourcesApi",
-                "resources/resource/{*path}",
+                "resources/{*path}",
                 new {controller = "Resources", action = "Index", source = string.Empty});
             routes.MapRoute(
                 "Default",

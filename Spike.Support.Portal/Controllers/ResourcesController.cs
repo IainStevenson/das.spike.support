@@ -23,7 +23,7 @@ namespace Spike.Support.Portal.Controllers
             _siteConnector = new SiteConnector();
         }
 
-        [Route("resources/resource/{*path}")]
+        [Route("resources/{*path}")]
         public async Task<MvcHtmlString> Get(string path)
         {
             var source = path.Split('/').FirstOrDefault();

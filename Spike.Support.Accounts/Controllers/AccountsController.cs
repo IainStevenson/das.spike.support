@@ -41,9 +41,9 @@ namespace Spike.Support.Accounts.Controllers
         public async Task<ActionResult> Index(int id)
         {
             var paymentsView = await _siteConnector.DownloadView(new Uri(_portalAddress),
-                $"resources/resource/payments/accounts/{id}");
+                $"resources/payments/accounts/{id}");
             var usersView =
-                await _siteConnector.DownloadView(new Uri(_portalAddress), $"resources/resource/users/accounts/{id}/");
+                await _siteConnector.DownloadView(new Uri(_portalAddress), $"resources/users/accounts/{id}/");
 
             var accountDetailsViewModel = new AccountDetailViewModel
             {

@@ -33,7 +33,7 @@ namespace Spike.Support.Portal.Controllers
             return View("index", indexViewModel);
         }
 
-        [Route("views/view/{*path}")]
+        [Route("views/{*path}")]
         public async Task<ActionResult> Index(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return new HttpNotFoundResult();
