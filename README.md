@@ -1,7 +1,7 @@
 # das.spike.support
 DAS Support Architecture Spike
 
-Inviestigation on how to handle removal of Site manifest elements and release each site to do waht it needs to do.
+Investigation on how to handle removal of Site manifest elements and release each site to do what it needs to do.
 
 # Objectives
 
