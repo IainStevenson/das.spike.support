@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -24,9 +23,7 @@ namespace Spike.Support.Portal.Controllers
 
             if (string.IsNullOrWhiteSpace(source)) return new MvcHtmlString(string.Empty);
 
-            SupportServices service;
-
-            var ok = Enum.TryParse(source, true, out service);
+            var ok = Enum.TryParse(source, true, out SupportServices service);
 
             if (!ok)
             {

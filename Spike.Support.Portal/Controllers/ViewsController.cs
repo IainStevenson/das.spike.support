@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Portal.Models;
 using Spike.Support.Shared;
@@ -8,9 +10,7 @@ namespace Spike.Support.Portal.Controllers
     public class ViewsController : Controller
     {
         private readonly ISiteConnector _siteConnector;
-        private readonly string _accountsBaseAddress = "https://localhost:44317/";
-        private readonly string _usersBaseAddress = "https://localhost:44309/";
-
+       
         public ViewsController()
         {
             _siteConnector = new SiteConnector();
@@ -45,6 +45,20 @@ namespace Spike.Support.Portal.Controllers
             if (path.ToLower().StartsWith("accounts".ToLower()))
                 indexViewModel.AccountsView = await _siteConnector.DownloadView(SupportServices.Accounts, $"{path}");
             return View("index", indexViewModel);
+        }
+
+
+        [Route("endcall/{identity?}")]
+        public async Task<ActionResult> EndCall(string identity)
+        {
+            // call all of the sites to clear call authorisation
+            var model = new EndCallViewModel();
+            foreach (SupportServices supportService in _siteConnector.Services.Keys.Where(x=>x != SupportServices.Portal))
+            {
+                model.ServiceViews.Add(await _siteConnector.DownloadView(supportService, $"endcall"));
+            }
+
+            return View("EndCall", model);
         }
     }
 }

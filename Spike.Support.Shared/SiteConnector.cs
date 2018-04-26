@@ -16,6 +16,11 @@ namespace Spike.Support.Shared
             {SupportServices.Payments, new Uri("https://localhost:44345/")}
         };
 
+        public SiteConnector()
+        {
+            //TODO: Configure Services
+            //TODO: implement token based security
+        }
         public async Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri)
         {
             var baseUrl = Services[serviceName];
@@ -26,6 +31,7 @@ namespace Spike.Support.Shared
 
             return await DownloadView(baseUrl, uri);
         }
+
 
         private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
         {

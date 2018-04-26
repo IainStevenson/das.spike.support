@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Users.Models;
 
@@ -47,5 +48,12 @@ namespace Spike.Support.Users.Controllers
                 Users = _usersViewModel.Users.Where(x => x.AccountId == id).ToList()
             });
         }
+
+        [Route("endcall/{identity?}")]
+        public async Task<ActionResult> EndCall(string identity)
+        {
+            return View("EndCall");
+        }
+
     }
 }

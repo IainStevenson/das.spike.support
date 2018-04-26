@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared;
@@ -64,19 +63,18 @@ namespace Spike.Support.Accounts.Controllers
         {
             return MvcApplication.AccountChallenges
                        .FirstOrDefault(x =>
-                           x.AccountId == id
-                           && x.Identity == null
-                           && x.Until > DateTimeOffset.UtcNow) == null;
+                           x.Value.AccountId == id
+                           && x.Value.Identity == null
+                           && x.Value.Until > DateTimeOffset.UtcNow).Value == null;
         }
         
         private void AddChallengePass(int id)
         {
-            
-            MvcApplication.AccountChallenges.Add(new AgentAccountChallenge()
+            MvcApplication.AccountChallenges.AddOrUpdate(Guid.NewGuid(), new AgentAccountChallenge()
             {
                 AccountId = id,
-                Until = DateTimeOffset.UtcNow.AddMinutes(10)
-            });
+                Until = DateTimeOffset.UtcNow.AddSeconds(15)
+            }, (guid, challenge) => { return challenge; });
             
         }
 
@@ -118,6 +116,22 @@ namespace Spike.Support.Accounts.Controllers
             return Redirect("accounts/denied");
         }
 
+
+
+        [Route("endcall/{identity?}")]
+        public ActionResult EndCall(string identity)
+        {
+
+            MvcApplication.AccountChallenges.Clear();
+
+            //var itemsToDelete = MvcApplication.AccountChallenges.Where(x => x.Value.Identity == identity).ToList();
+            //foreach (var agentAccountChallenge in itemsToDelete)
+            //{
+                
+            //}
+
+            return View("EndCall");
+        }
 
     }
 }

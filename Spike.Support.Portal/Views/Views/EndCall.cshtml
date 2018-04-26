@@ -1,0 +1,15 @@
+﻿@model Spike.Support.Portal.Models.EndCallViewModel
+<h1>
+    Your call has been closed.
+</h1>
+<ul>
+    @foreach (var view in Model.ServiceViews)
+    {
+        <li>
+            @Html.Raw(view)
+        </li>
+    }
+</ul>
+<div>
+    <h3>@Html.ActionLink("Start a new call", "Index")</h3>
+</div>

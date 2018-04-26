@@ -187,6 +187,7 @@
     <Content Include="Views\Payments\payments.cshtml" />
     <Content Include="Views\Payments\_payment.cshtml" />
     <Content Include="Views\Payments\_accountPaymentDetails.cshtml" />
+    <Content Include="Views\Payments\EndCall.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

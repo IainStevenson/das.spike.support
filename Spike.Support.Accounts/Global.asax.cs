@@ -17,8 +17,8 @@ namespace Spike.Support.Accounts
 
     public class MvcApplication : HttpApplication
     {
-
-        public static ConcurrentBag<AgentAccountChallenge> AccountChallenges  = new ConcurrentBag<AgentAccountChallenge>();
+        
+        public static readonly ConcurrentDictionary<Guid, AgentAccountChallenge> AccountChallenges  = new ConcurrentDictionary<Guid, AgentAccountChallenge>();
 
         protected void Application_Start()
         {

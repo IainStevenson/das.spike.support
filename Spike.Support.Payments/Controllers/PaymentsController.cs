@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Payments.Models;
 
@@ -56,5 +57,13 @@ namespace Spike.Support.Payments.Controllers
             };
             return View("_accountPaymentDetails", paymentsViewModel);
         }
+
+
+        [Route("endcall/{identity?}")]
+        public async Task<ActionResult> EndCall(string identity)
+        {
+            return View("EndCall");
+        }
+
     }
 }

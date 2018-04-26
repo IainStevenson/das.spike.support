@@ -63,6 +63,7 @@
     <Compile Include="ISiteConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SiteConnector.cs" />
+    <Compile Include="SupportServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
