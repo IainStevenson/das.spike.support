@@ -1,0 +1,12 @@
+﻿@model Spike.Support.Portal.Models.ChallengeViewModel
+@{
+    ViewBag.Title = "Home Page";
+}
+<div class="alert alert-info">
+    <h1>DAS Support - Challenge Spike</h1>
+    <span>The user must provide a challenge response to proceeed.</span>
+</div>
+
+
+@Html.HiddenFor(model => model.Id);
+@Html.HiddenFor(model => model.RedirectTo);
