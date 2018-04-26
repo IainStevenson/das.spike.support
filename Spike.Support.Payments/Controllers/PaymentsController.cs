@@ -9,7 +9,7 @@ namespace Spike.Support.Payments.Controllers
     public class PaymentsController : Controller
     {
         private readonly PaymentsViewModel _paymentsViewModels;
-
+        
 
         public PaymentsController()
         {
@@ -24,6 +24,7 @@ namespace Spike.Support.Payments.Controllers
                         Amount = x * 1000
                     }).ToList()
             };
+            
         }
 
         [Route("")]
@@ -36,7 +37,7 @@ namespace Spike.Support.Payments.Controllers
         [Route("payments/{id:guid}")]
         public ActionResult Index(Guid id)
         {
-            var paymentsViewModel = new List<PaymentViewModel>
+             var paymentsViewModel = new List<PaymentViewModel>
             {
                 _paymentsViewModels.Payments.FirstOrDefault(x => x.PaymentId == id)
             };

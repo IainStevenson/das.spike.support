@@ -1,0 +1,13 @@
+﻿@model Spike.Support.Accounts.Models.AccountsChallengeViewModel
+@using (Html.BeginForm(
+    "AccountsChallengeResponse", 
+    "Accounts", 
+    FormMethod.Post, 
+    new Dictionary<string, object>() { { "action", (object)$"{Model.ResponseUrl}" } }))
+{
+    @Html.HiddenFor(m => m.AccountId)
+    @Html.HiddenFor(m => m.ReturnTo)
+    @Html.LabelFor(m => m.Challenge)
+    @Html.TextBoxFor(m => m.Response)
+    <input type="submit" value="Hit It" />
+}

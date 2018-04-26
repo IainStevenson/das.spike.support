@@ -149,6 +149,7 @@
     <Compile Include="Models\AccountDetailViewModel.cs" />
     <Compile Include="Models\AccountsViewModel.cs" />
     <Compile Include="Models\AccountViewModel.cs" />
+    <Compile Include="Models\PaymentChallengeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +191,7 @@
     <Content Include="Views\Accounts\_accountDetails.cshtml" />
     <Content Include="Views\Accounts\_accountDetailPayments.cshtml" />
     <Content Include="Views\Accounts\_accountDetailUsers.cshtml" />
+    <Content Include="Views\Accounts\_accountsChallenge.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

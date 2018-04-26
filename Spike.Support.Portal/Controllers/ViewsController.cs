@@ -21,8 +21,8 @@ namespace Spike.Support.Portal.Controllers
         {
             // OK.... here we go.
             // Make download calls to Users, Accounts, Accounts will ask for a Download roundtrip for Payements.. by Account
-            var usersView = await _siteConnector.DownloadView(_usersBaseAddress, "users");
-            var accountsView = await _siteConnector.DownloadView(_accountsBaseAddress, "accounts");
+            var usersView = await _siteConnector.DownloadView(SupportServices.Users, "users");
+            var accountsView = await _siteConnector.DownloadView(SupportServices.Accounts, "accounts");
             var indexViewModel = new IndexViewModel
             {
                 UsersView = usersView,
@@ -33,7 +33,7 @@ namespace Spike.Support.Portal.Controllers
             return View("index", indexViewModel);
         }
 
-        [Route("views/view/{*path}")]
+        [Route("views/{*path}")]
         public async Task<ActionResult> Index(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return new HttpNotFoundResult();
@@ -41,9 +41,9 @@ namespace Spike.Support.Portal.Controllers
             var indexViewModel = new IndexViewModel();
 
             if (path.ToLower().StartsWith("users".ToLower()))
-                indexViewModel.UsersView = await _siteConnector.DownloadView(_usersBaseAddress, $"{path}");
+                indexViewModel.UsersView = await _siteConnector.DownloadView(SupportServices.Users, $"{path}");
             if (path.ToLower().StartsWith("accounts".ToLower()))
-                indexViewModel.AccountsView = await _siteConnector.DownloadView(_accountsBaseAddress, $"{path}");
+                indexViewModel.AccountsView = await _siteConnector.DownloadView(SupportServices.Accounts, $"{path}");
             return View("index", indexViewModel);
         }
     }

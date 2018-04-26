@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -7,27 +8,26 @@ namespace Spike.Support.Shared
 {
     public class SiteConnector : ISiteConnector
     {
-        public async Task<MvcHtmlString> DownloadView(string baseUrl, string uri)
+        public Dictionary<SupportServices, Uri> Services { get; } = new Dictionary<SupportServices, Uri>
         {
+            {SupportServices.Portal, new Uri("https://localhost:44394/")},
+            {SupportServices.Accounts, new Uri("https://localhost:44317/")},
+            {SupportServices.Users, new Uri("https://localhost:44309/")},
+            {SupportServices.Payments, new Uri("https://localhost:44345/")}
+        };
+
+        public async Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri)
+        {
+            var baseUrl = Services[serviceName];
             var client = new HttpClient
             {
-                BaseAddress = new Uri(baseUrl, UriKind.Absolute)
+                BaseAddress = baseUrl
             };
 
-            string content = null;
-            try
-            {
-                content = await client.GetStringAsync(uri);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return new MvcHtmlString(content);
+            return await DownloadView(baseUrl, uri);
         }
 
-        public async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
+        private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
         {
             var client = new HttpClient
             {

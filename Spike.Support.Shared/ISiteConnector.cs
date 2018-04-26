@@ -1,14 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Spike.Support.Shared
 {
+
+    public enum SupportServices
+    {
+        Portal,
+        Accounts,
+        Payments,
+        Users
+
+    }
+
     public interface ISiteConnector
     {
-        Task<MvcHtmlString> DownloadView(string baseUrl, string uri);
-
-        Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri);
-        // Task<T> DownloadResource<T>(Uri resourceAddress, string uri) where T: class; 
+        Dictionary<SupportServices, Uri> Services { get; }
+        Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri);
     }
 }
