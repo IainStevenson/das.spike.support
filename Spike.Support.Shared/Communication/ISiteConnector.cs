@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Spike.Support.Shared
+namespace Spike.Support.Shared.Communication
 {
     public interface ISiteConnector
     {

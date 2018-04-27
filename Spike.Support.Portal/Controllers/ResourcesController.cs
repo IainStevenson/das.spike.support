@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Communication;
 
 namespace Spike.Support.Portal.Controllers
 {

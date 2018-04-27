@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Communication;
 
 namespace Spike.Support.Accounts.Controllers
 {
