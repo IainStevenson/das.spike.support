@@ -12,5 +12,7 @@ namespace Spike.Support.Shared.Communication
         T GetMenuTemplates<T>(SupportServices service, string uri);
         void SetHeader(string header, object value);
         void ClearHeader(string header);
+        Task<bool> Challenge(string uri);
+
     }
 }

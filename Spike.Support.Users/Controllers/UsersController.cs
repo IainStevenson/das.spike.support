@@ -84,12 +84,5 @@ namespace Spike.Support.Users.Controllers
                 new Dictionary<string, string>() { { "userId", $"{id}" } });
             ViewBag.ActiveMenuKey = selectedItem;
         }
-
-        [Route("endcall/{identity?}")]
-        public ActionResult EndCall(string identity)
-        {
-            return View("EndCall");
-        }
-
     }
 }

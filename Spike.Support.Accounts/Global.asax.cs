@@ -15,8 +15,7 @@ namespace Spike.Support.Accounts
     {
         public static Dictionary<string, NavItem> NavItems = new Dictionary<string, NavItem>();
 
-        public static readonly ConcurrentDictionary<Guid, AgentAccountChallenge> AccountChallenges  = new ConcurrentDictionary<Guid, AgentAccountChallenge>();
-
+       
         protected void Application_Start()
         {
             HostingEnvironment

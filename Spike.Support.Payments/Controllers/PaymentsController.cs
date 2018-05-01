@@ -73,13 +73,5 @@ namespace Spike.Support.Payments.Controllers
             };
             return View("_accountPaymentDetails", paymentsViewModel);
         }
-
-
-        [Route("endcall/{identity?}")]
-        public ActionResult EndCall(string identity)
-        {
-            return View("EndCall");
-        }
-
     }
 }

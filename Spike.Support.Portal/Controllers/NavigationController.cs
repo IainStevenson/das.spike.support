@@ -19,7 +19,7 @@ namespace Spike.Support.Portal.Controllers
             new NavItem(){ Key = "Account.Users", Ordinal = 2, Text = "Users", NavigateUrl = "views/accounts/{accountId}/users"},
         };
 
-        [System.Web.Mvc.Route("api/navigation/{id}")]
+        [Route("api/navigation/{id}")]
         [HttpGet]
         public async Task<Dictionary<string, NavItem>> NavigationItems(string id)
         {

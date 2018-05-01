@@ -7,5 +7,7 @@
         public string Challenge { get; set; }
         public string Response { get; set; }
         public string ResponseUrl { get; set; }
+        public string EntityType { get; set; }
+        public string Identity { get; set; }
     }
 }

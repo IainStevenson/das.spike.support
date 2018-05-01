@@ -34,8 +34,8 @@ namespace Spike.Support.Accounts.Controllers
             if (!MvcApplication.NavItems.Any())
             {
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
-                                SupportServices.Portal, 
-                                "api/navigation/account")?? new Dictionary<string, NavItem>();
+                                SupportServices.Portal,
+                                "api/navigation/account") ?? new Dictionary<string, NavItem>();
 
             }
             base.OnActionExecuting(filterContext);
@@ -48,22 +48,18 @@ namespace Spike.Support.Accounts.Controllers
             return View("accounts", _accountViewModels);
         }
 
-       
+
 
         [Route("accounts/{id:int}")]
         public ActionResult AccountDetail(int id)
         {
-            
+
             var accountDetailsViewModel = new AccountDetailViewModel
             {
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
             };
 
-            ViewBag.Menu = NavItem.TransformNavItems(
-                                MvcApplication.NavItems,
-                                _siteConnector.Services[SupportServices.Portal],
-                                new Dictionary<string, string>() {{"accountId", $"{id}"}});
-            ViewBag.ActiveMenuKey = "Account.Account";
+            SetMenu(id, "Account.Account");
 
             return View("_accountDetails", accountDetailsViewModel);
         }
@@ -72,34 +68,49 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}/payments")]
         public async Task<ActionResult> AccountPayments(int id)
         {
-            if (ChallengeRequest(id))
+            var entityType = "Account.Payments";
+            var identityName = GetIdentityOfCaller();
+
+            if (await _siteConnector.Challenge(
+                $"api/challenge/required/{entityType}/{id}/{identityName}"))
             {
                 return RedirectToAction("AccountsChallenge", new
                 {
-                    id,
+                    entityType,
+                    identifier = id,
+                    identity = identityName,
                     returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments"
                 });
             }
 
             var paymentsView = await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}");
-           
+
             var accountPaymentsViewModel = new AccountPaymentsViewModel
             {
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
                 View = paymentsView,
-                
+
             };
 
-            ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems, 
-                _siteConnector.Services[SupportServices.Portal],
-                new Dictionary<string, string>() { { "accountId", $"{id}" } }
-                );
-            ViewBag.ActiveMenuKey = "Account.Payments";
+            SetMenu(id, entityType);
 
             return View("_accountPayments", accountPaymentsViewModel);
         }
 
+        private void SetMenu(int id, string selectedItem)
+        {
+            ViewBag.Menu = NavItem.TransformNavItems(
+                MvcApplication.NavItems,
+                _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "accountId", $"{id}" } }
+            );
+            ViewBag.ActiveMenuKey = selectedItem;
+        }
+
+        private string GetIdentityOfCaller()
+        {
+            return  "Anonymous";//Request.RequestContext?.HttpContext.User?.Identity?.Name ??
+        }
 
 
         [Route("accounts/{id:int}/users")]
@@ -113,97 +124,56 @@ namespace Spike.Support.Accounts.Controllers
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
                 View = usersView
             };
+            SetMenu(id, "Account.Users");
 
-            ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems, 
-                _siteConnector.Services[SupportServices.Portal],
-                new Dictionary<string, string>() { { "accountId", $"{id}" } }
-                );
-            ViewBag.ActiveMenuKey = "Account.Users";
             return View("_accountUsers", accountUsersViewModel);
         }
 
 
 
-        private bool ChallengeRequest(int id)
+
+
+        public ActionResult AccountsChallenge(string entityType, string identity, int identifier, string returnTo)
         {
-            return MvcApplication.AccountChallenges
-                       .FirstOrDefault(x =>
-                           x.Value.AccountId == id
-                           && x.Value.Identity == null
-                           && x.Value.Until > DateTimeOffset.UtcNow).Value == null;
-        }
-
-        private void AddChallengePass(int id)
-        {
-            MvcApplication.AccountChallenges.AddOrUpdate(Guid.NewGuid(), new AgentAccountChallenge()
-            {
-                AccountId = id,
-                Until = DateTimeOffset.UtcNow.AddSeconds(15)
-            }, (guid, challenge) => { return challenge; });
-
-        }
-
-        public ActionResult AccountsChallenge(int id, string returnTo)
-        {
-
-            // TODO: Get Challenge for AccountId = id
 
             var model = new AccountsChallengeViewModel()
             {
-                AccountId = id,
+                AccountId = identifier,
                 Challenge = "Challenge",
                 Response = null,
                 ReturnTo = returnTo,
+                EntityType = entityType,
+                Identity = identity,
                 ResponseUrl = $"{_siteConnector.Services[SupportServices.Accounts]}accounts/challenge/response"
             };
-            ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems,
-                _siteConnector.Services[SupportServices.Portal],
-                new Dictionary<string, string>() { { "accountId", $"{id}" } }
-            );
-            ViewBag.ActiveMenuKey = "Account.Payments";
+            SetMenu(identifier, "Account.Payments");
+
             return View("_accountsChallenge", model);
         }
 
         [Route("accounts/challenge/response")]
         [HttpPost]
-        public ActionResult AccountsChallengeResponse(FormCollection formProperties)
+        public async Task<ActionResult> AccountsChallengeResponse(FormCollection formProperties)
         {
             var response = (formProperties ?? new FormCollection())["Response"] ?? string.Empty;
 
             if (!string.IsNullOrWhiteSpace(response))
             {
                 var id = (formProperties ?? new FormCollection())["AccountId"] ?? string.Empty;
-
+                var entityType = (formProperties ?? new FormCollection())["EntityType"] ?? string.Empty;
+                var identity = (formProperties ?? new FormCollection())["Identity"] ?? string.Empty;
                 if (int.TryParse(id, out var accountId))
                 {
                     // TODO: Verify response is valid for id
 
-                    AddChallengePass(accountId);
+                    await _siteConnector.Challenge(
+                        $"api/challenge/passed/{entityType}/{accountId}/{identity}");
+
                     var returnTo = (formProperties ?? new FormCollection())["ReturnTo"] ?? string.Empty;
                     return Redirect(returnTo);
                 }
             }
             return Redirect("accounts/denied");
         }
-
-
-
-        [Route("endcall/{identity?}")]
-        public ActionResult EndCall(string identity)
-        {
-
-            MvcApplication.AccountChallenges.Clear();
-
-            //var itemsToDelete = MvcApplication.AccountChallenges.Where(x => x.Value.Identity == identity).ToList();
-            //foreach (var agentAccountChallenge in itemsToDelete)
-            //{
-
-            //}
-
-            return View("EndCall");
-        }
-
     }
 }

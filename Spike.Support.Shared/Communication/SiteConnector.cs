@@ -75,6 +75,29 @@ namespace Spike.Support.Shared.Communication
             }
         }
 
+        public async Task<bool> Challenge(string uri)
+        {
+            var client = new HttpClient
+            {
+                BaseAddress = Services[SupportServices.Portal]
+            };
+            
+            try
+            {
+                var response = await client.GetAsync(uri);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<bool>(content);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return true;
+        }
+
         private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
         {
             var client = new HttpClient
@@ -103,34 +126,5 @@ namespace Spike.Support.Shared.Communication
                 client.DefaultRequestHeaders.Add(customHeader.Key, $"{customHeader.Value}");
             }
         }
-
-        //public async Task<T> DownloadResource<T>(Uri resourceAddress, string uri) where T: class
-        //{
-        //    var client = new HttpClient
-        //    {
-        //        BaseAddress = resourceAddress
-        //    };
-
-        //    string content = null;
-        //    try
-        //    {
-        //       var  response = await client.GetAsync(uri);
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            content = await response.Content.ReadAsStringAsync();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //    }
-
-        //    if (typeof(T) == typeof(string))
-        //    {
-        //        return content as T;
-        //    }
-
-        //    return JsonConvert.DeserializeObject<T>(content);
-        //}
     }
 }
