@@ -48,11 +48,8 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}")]
         public ActionResult User(int id)
         {
-            ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems, 
-                _siteConnector.Services[SupportServices.Portal],
-                new Dictionary<string, string>() { { "userId", $"{id}" } });
-            ViewBag.ActiveMenuKey = "User.User";
+            
+            SetMenu(id, "User.User");
 
             return View("users", new UsersViewModel
             {
@@ -67,16 +64,25 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}/accounts")]
         public ActionResult UserAccounts(int id)
         {
-            ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems, 
-                _siteConnector.Services[SupportServices.Portal],
-                new Dictionary<string, string>() { { "userId", $"{id}" } });
-            ViewBag.ActiveMenuKey = "User.Accounts";
+
+            SetMenu(id, "User.Accounts");
+            
 
             return View("users", new UsersViewModel
             {
                 Users = _usersViewModel.Users.Where(x => x.AccountId == id).ToList()
             });
+        }
+
+        private void SetMenu(int id, string selectedItem)
+        {
+            if (Request.Headers.AllKeys.Contains("X-Resource")) return;
+
+            ViewBag.Menu = NavItem.TransformNavItems(
+                MvcApplication.NavItems,
+                _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "userId", $"{id}" } });
+            ViewBag.ActiveMenuKey = selectedItem;
         }
 
         [Route("endcall/{identity?}")]

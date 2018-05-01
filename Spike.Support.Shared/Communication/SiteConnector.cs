@@ -25,11 +25,7 @@ namespace Spike.Support.Shared.Communication
         public async Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri)
         {
             var baseUrl = Services[serviceName];
-            var client = new HttpClient
-            {
-                BaseAddress = baseUrl
-            };
-
+           
             return await DownloadView(baseUrl, uri);
         }
 
@@ -40,6 +36,8 @@ namespace Spike.Support.Shared.Communication
             {
                 BaseAddress = baseUrl
             };
+            AddCustomHeaders(client);
+
             string content = null;
             try
             {
@@ -56,6 +54,27 @@ namespace Spike.Support.Shared.Communication
             return content != null ?  JsonConvert.DeserializeObject<T>(content) : default(T);
         }
 
+        private Dictionary<string, object> _customHeaders = new Dictionary<string, object>() ;
+        public void SetHeader(string header, object value)
+        {
+            if (_customHeaders.ContainsKey(header))
+            {
+                _customHeaders[header] =  value;
+            }
+            else
+            {
+                _customHeaders.Add(header, value);
+            }
+        }
+
+        public void ClearHeader(string header)
+        {
+            if (_customHeaders.ContainsKey(header))
+            {
+                _customHeaders.Remove(header);
+            }
+        }
+
         private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
         {
             var client = new HttpClient
@@ -63,6 +82,7 @@ namespace Spike.Support.Shared.Communication
                 BaseAddress = resourceAddress
             };
 
+            AddCustomHeaders(client);
             string content = null;
             try
             {
@@ -74,6 +94,14 @@ namespace Spike.Support.Shared.Communication
             }
 
             return new MvcHtmlString(content);
+        }
+
+        private void AddCustomHeaders(HttpClient client)
+        {
+            foreach (var customHeader in _customHeaders)
+            {
+                client.DefaultRequestHeaders.Add(customHeader.Key, $"{customHeader.Value}");
+            }
         }
 
         //public async Task<T> DownloadResource<T>(Uri resourceAddress, string uri) where T: class

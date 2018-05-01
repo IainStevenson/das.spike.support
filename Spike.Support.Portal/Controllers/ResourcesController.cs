@@ -30,8 +30,10 @@ namespace Spike.Support.Portal.Controllers
             {
                 return await Task.Run(() => new MvcHtmlString(string.Empty));
             }
-            
+
+            _siteConnector.SetHeader("X-Resource", null);
             var resource = await _siteConnector.DownloadView(service, $"{path}");
+            _siteConnector.ClearHeader("X-Resource");
 
             return resource;
         }
