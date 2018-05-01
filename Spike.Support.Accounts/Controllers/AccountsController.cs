@@ -77,7 +77,7 @@ namespace Spike.Support.Accounts.Controllers
                 return RedirectToAction("AccountsChallenge", new
                 {
                     id,
-                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}"
+                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments"
                 });
             }
 

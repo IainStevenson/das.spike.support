@@ -17,10 +17,9 @@
             <div class="list-item-group">
                 @foreach (var menuItem in menuItems)
                 {
+                    var active = (activeMenuItem.ToLower() == @menuItem.Key.ToLower()? "active": "");
                     <a 
-                        class="list-group-item list-group-item-action @((activeMenuItem).ToLower() == @menuItem.Key.ToLower())? 
-                       'active': 
-                       ''" 
+                        class="list-group-item list-group-item-action @active" 
                         id="menu@menuItem.Key"
                         href="@menuItem.NavigateUrl">@menuItem.Text</a>
                 }
