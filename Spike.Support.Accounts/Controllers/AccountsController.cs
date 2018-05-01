@@ -157,7 +157,12 @@ namespace Spike.Support.Accounts.Controllers
                 ReturnTo = returnTo,
                 ResponseUrl = $"{_siteConnector.Services[SupportServices.Accounts]}accounts/challenge/response"
             };
-
+            ViewBag.Menu = NavItem.TransformNavItems(
+                MvcApplication.NavItems,
+                _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "accountId", $"{id}" } }
+            );
+            ViewBag.ActiveMenuKey = "Account.Payments";
             return View("_accountsChallenge", model);
         }
 
