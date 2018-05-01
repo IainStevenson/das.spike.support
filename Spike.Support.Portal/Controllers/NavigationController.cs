@@ -1,29 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
     public class NavigationController : ApiController
     {
+
+        private List<NavItem> _systemMenu = new List<NavItem>()
+        {
+            new NavItem(){ Key = "User.User", Text = "User", NavigateUrl = "views/users/{userId}"},
+            new NavItem(){ Key = "User.Account", Text = "Account", NavigateUrl = "views/accounts/{userId}"},
+            new NavItem(){ Key = "Account.Account", Text = "Account", NavigateUrl = "views/accounts/{accountId}"},
+            new NavItem(){ Key = "Account.Payments", Text = "Payments", NavigateUrl = "views/payments/accounts/{accountId}"},
+            new NavItem(){ Key = "Account.Users", Text = "Users", NavigateUrl = "views/accounts/{accountId}/users"},
+        };
+
         [System.Web.Mvc.Route("api/navigation/{id}")]
         [HttpGet]
-        public async Task<Dictionary<string, string>> NavigationItems(string id)
+        public async Task<Dictionary<string, NavItem>> NavigationItems(string id)
         {
-            var menuItems = new Dictionary<string, string>() { };
+            var menuItems = new Dictionary<string, NavItem>() { };
 
-            if (id == "user")
+            foreach (var navItem in _systemMenu
+                .Where(
+                        x=>x.Key.StartsWith($"{id??x.Key}.".Replace("..","."), StringComparison.CurrentCultureIgnoreCase)
+                    ))
             {
-                menuItems.Add("User.User", "/users/{userId}");
-                menuItems.Add("User.Account", "/accounts/{userId}");
+                menuItems.Add(navItem.Key, navItem);
             }
-            else
-            {
-                menuItems.Add("Account.Account", "/accounts/{accountId}");
-                menuItems.Add("Account.Payments", "/payments/accounts/{accountId}");
-                menuItems.Add("Account.Users", "/accounts/{accountId}/users");
-            }
-            
+
             return await Task.FromResult(menuItems);
         }
     }

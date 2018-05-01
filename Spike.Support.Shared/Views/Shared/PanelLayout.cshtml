@@ -1,7 +1,8 @@
 ﻿@using System.Web.UI.WebControls
+@using Spike.Support.Shared.Models
 @{
-    var menuItems = ((ViewBag.Menu ?? new Dictionary<string, Uri>()) as Dictionary<string, Uri>);
-    var activeMenuItem = (ViewBag.ActiveMenu?? menuItems.Keys.FirstOrDefault());
+    var menuItems = ((ViewBag.Menu ?? new List<NavItem>()) as List<NavItem>);
+    var activeMenuItem = (ViewBag.ActiveMenu?? menuItems.FirstOrDefault()?.Text??string.Empty);
 
 }
 <div class="row">
@@ -14,10 +15,14 @@
     {
         <div class="col-lg-2" id="panelNavigation">
             <div class="list-item-group">
-            @foreach (var menuItem in menuItems)
-            {
-                <a class="list-group-item list-group-item-action @((activeMenuItem?? string.Empty).ToLower() == @menuItem.Key.ToLower())? 'active': ''" href="@menuItem.Value">@menuItem.Key</a>
-            }
+                @foreach (var menuItem in menuItems)
+                {
+                    <a 
+                        class="list-group-item list-group-item-action @((activeMenuItem?? string.Empty).ToLower() == @menuItem.Text.ToLower())? 
+                       'active': 
+                       ''" 
+                        href="@menuItem.NavigateUrl">@menuItem.Text</a>
+                }
             </div>
         </div>
         <div class="col-lg-10" id="panelContent">

@@ -1,14 +1,18 @@
-﻿using System.Web;
+﻿using System.Collections.Generic;
+using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Payments
 {
     public class MvcApplication : HttpApplication
     {
+        public static Dictionary<string, NavItem> NavItems = new Dictionary<string, NavItem>();
+
         protected void Application_Start()
         {
             HostingEnvironment

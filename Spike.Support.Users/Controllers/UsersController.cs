@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Communication;
 using Spike.Support.Shared.Models;
 using Spike.Support.Users.Models;
 
 namespace Spike.Support.Users.Controllers
 {
-    public class UsersController : ViewControllerBase
+    public class UsersController : Controller
     {
         private readonly UsersViewModel _usersViewModel = new UsersViewModel
         {
@@ -22,6 +22,22 @@ namespace Spike.Support.Users.Controllers
             }).ToList()
         };
 
+        private readonly ISiteConnector _siteConnector;
+
+        public UsersController()
+        {
+            _siteConnector = new SiteConnector();
+        }
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (!MvcApplication.NavItems.Any())
+            {
+                MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
+                    SupportServices.Portal,
+                    "api/navigation/user") ?? new Dictionary<string, NavItem>();
+            }
+            base.OnActionExecuting(filterContext);
+        }
         [Route("")]
         [Route("users")]
         public ActionResult Users()
@@ -32,7 +48,8 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}")]
         public ActionResult User(int id)
         {
-            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "userId", $"{id}" } });
+            ViewBag.Menu = NavItem.TransformNavItems(MvcApplication.NavItems, _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "userId", $"{id}" } });
             ViewBag.ActiveMenu = "user";
 
             return View("users", new UsersViewModel
@@ -48,7 +65,8 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}/accounts")]
         public ActionResult UserAccounts(int id)
         {
-            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "userId", $"{id}" } });
+            ViewBag.Menu = NavItem.TransformNavItems(MvcApplication.NavItems, _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "userId", $"{id}" } });
             ViewBag.ActiveMenu = "accounts";
 
             return View("users", new UsersViewModel
@@ -58,7 +76,7 @@ namespace Spike.Support.Users.Controllers
         }
 
         [Route("endcall/{identity?}")]
-        public async Task<ActionResult> EndCall(string identity)
+        public ActionResult EndCall(string identity)
         {
             return View("EndCall");
         }

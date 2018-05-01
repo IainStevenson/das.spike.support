@@ -33,7 +33,7 @@ namespace Spike.Support.Shared.Communication
             return await DownloadView(baseUrl, uri);
         }
 
-        public async Task<T> DownloadResources<T>(SupportServices serviceName, string uri)
+        public T GetMenuTemplates<T>(SupportServices serviceName, string uri)
         {
             var baseUrl = Services[serviceName];
             var client = new HttpClient
@@ -43,19 +43,16 @@ namespace Spike.Support.Shared.Communication
             string content = null;
             try
             {
-                var response =  await client.GetAsync(uri);
+                var response =  client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
                 if (response.IsSuccessStatusCode)
                 {
-                    content = await response.Content.ReadAsStringAsync();
-                    
+                    content = response.Content.ReadAsStringAsync().Result;
                 }
-                
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-
             return content != null ?  JsonConvert.DeserializeObject<T>(content) : default(T);
         }
 

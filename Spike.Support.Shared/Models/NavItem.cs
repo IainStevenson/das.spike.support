@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spike.Support.Shared.Models
 {
     public class NavItem
     {
+        public string Key { get; set; } = string.Empty;
+
+
         public string Text { get; set; } = string.Empty;
         public string NavigateUrl { get; set; } = "/";
         public int Ordinal { get; set; }
@@ -17,24 +17,29 @@ namespace Spike.Support.Shared.Models
         public List<NavItem> NavItems { get; set; } = new List<NavItem>();
 
 
-        public static List<NavItem> GetItems(Dictionary<string, string> templates, Dictionary<string, string> identifiers)
+        public static List<NavItem> TransformNavItems(
+            Dictionary<string, NavItem> templates, Uri baseUrl,
+            Dictionary<string, string> identifiers)
         {
             List<NavItem> menuItems = new List<NavItem>();
 
             foreach (var template in templates)
             {
-                var item = new NavItem();
-                item.Text = template.Key;
-                var url = template.Value;
+                var item = new NavItem
+                {
+                    Key = template.Key,
+                    Text = template.Value.Text,
+                    NavigateUrl = new Uri(baseUrl, template.Value.NavigateUrl).OriginalString
+                };
                 foreach (var identifier in identifiers)
                 {
-                   url = url.Replace($"{{{identifier.Key.Split('.').LastOrDefault()??string.Empty}}}", identifier.Value);
+                    item.NavigateUrl = item.NavigateUrl
+                        .Replace($"{{{identifier.Key.Split('.').LastOrDefault() ?? string.Empty}}}", 
+                            identifier.Value);
                 }
-                item.NavigateUrl = url;
                 menuItems.Add(item);
             }
-            return  menuItems;
-            
+            return menuItems;
         }
     }
 }

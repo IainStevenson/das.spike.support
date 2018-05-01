@@ -1,20 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Payments.Models;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Communication;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Payments.Controllers
 {
-    public class PaymentsController : ViewControllerBase
+    public class PaymentsController : Controller
     {
         private readonly PaymentsViewModel _paymentsViewModels;
-        
+        private readonly ISiteConnector _siteConnector;
+
+       
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (!MvcApplication.NavItems.Any())
+            {
+                MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
+                    SupportServices.Portal, 
+                    "api/navigation/payment") ?? new Dictionary<string, NavItem>();
+
+            }
+            base.OnActionExecuting(filterContext);
+        }
 
         public PaymentsController()
         {
+            _siteConnector = new SiteConnector();
             _paymentsViewModels = new PaymentsViewModel
             {
                 Payments = Enumerable.Range(1, 1000).Select(x =>
@@ -61,7 +76,7 @@ namespace Spike.Support.Payments.Controllers
 
 
         [Route("endcall/{identity?}")]
-        public async Task<ActionResult> EndCall(string identity)
+        public ActionResult EndCall(string identity)
         {
             return View("EndCall");
         }

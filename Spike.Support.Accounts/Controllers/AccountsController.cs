@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Communication;
 using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Accounts.Controllers
 {
-    public class AccountsController : ViewControllerBase
+    public class AccountsController : Controller
     {
         private readonly AccountsViewModel _accountViewModels = new AccountsViewModel
         {
@@ -22,6 +23,23 @@ namespace Spike.Support.Accounts.Controllers
                 }).ToList()
         };
 
+        private readonly ISiteConnector _siteConnector;
+
+        public AccountsController()
+        {
+            _siteConnector = new SiteConnector();
+        }
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (!MvcApplication.NavItems.Any())
+            {
+                MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
+                                SupportServices.Portal, 
+                                "api/navigation/account")?? new Dictionary<string, NavItem>();
+
+            }
+            base.OnActionExecuting(filterContext);
+        }
 
         [Route("")]
         [Route("accounts")]
@@ -36,7 +54,7 @@ namespace Spike.Support.Accounts.Controllers
        
 
         [Route("accounts/{id:int}")]
-        public async Task<ActionResult> AccountDetail(int id)
+        public ActionResult AccountDetail(int id)
         {
             
             var accountDetailsViewModel = new AccountDetailViewModel
@@ -44,7 +62,10 @@ namespace Spike.Support.Accounts.Controllers
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
             };
 
-            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() {{"accountId", $"{id}"}});
+            ViewBag.Menu = NavItem.TransformNavItems(
+                                MvcApplication.NavItems,
+                                _siteConnector.Services[SupportServices.Portal],
+                                new Dictionary<string, string>() {{"accountId", $"{id}"}});
             ViewBag.ActiveMenu = "account";
 
             return View("_accountDetails", accountDetailsViewModel);
@@ -58,7 +79,7 @@ namespace Spike.Support.Accounts.Controllers
             {
                 return RedirectToAction("AccountsChallenge", new
                 {
-                    id = id,
+                    id,
                     returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}"
                 });
             }
@@ -72,7 +93,8 @@ namespace Spike.Support.Accounts.Controllers
                 
             };
 
-            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "accountId", $"{id}" } });
+            ViewBag.Menu = NavItem.TransformNavItems(MvcApplication.NavItems, _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "accountId", $"{id}" } });
             ViewBag.ActiveMenu = "payments";
 
 
@@ -95,7 +117,8 @@ namespace Spike.Support.Accounts.Controllers
                 View = usersView
             };
 
-            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "accountId", $"{id}" } });
+            ViewBag.Menu = NavItem.TransformNavItems(MvcApplication.NavItems, _siteConnector.Services[SupportServices.Portal],
+                new Dictionary<string, string>() { { "accountId", $"{id}" } });
             ViewBag.ActiveMenu = "users";
             return View("_accountDetails", accountDetailsViewModel);
         }

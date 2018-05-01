@@ -7,12 +7,14 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Spike.Support.Shared;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Accounts
 {
     public class MvcApplication : HttpApplication
     {
-        
+        public static Dictionary<string, NavItem> NavItems = new Dictionary<string, NavItem>();
+
         public static readonly ConcurrentDictionary<Guid, AgentAccountChallenge> AccountChallenges  = new ConcurrentDictionary<Guid, AgentAccountChallenge>();
 
         protected void Application_Start()

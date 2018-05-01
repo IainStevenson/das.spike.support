@@ -9,6 +9,6 @@ namespace Spike.Support.Shared.Communication
     {
         Dictionary<SupportServices, Uri> Services { get; }
         Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri);
-        Task<T> DownloadResources<T>(SupportServices service, string uri);
+        T GetMenuTemplates<T>(SupportServices service, string uri);
     }
 }
