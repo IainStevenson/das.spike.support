@@ -2,7 +2,7 @@
 @using Spike.Support.Shared.Models
 @{
     var menuItems = ((ViewBag.Menu ?? new List<NavItem>()) as List<NavItem>);
-    var activeMenuItem = (ViewBag.ActiveMenu?? menuItems.FirstOrDefault()?.Text??string.Empty);
+    var activeMenuItem = (ViewBag.ActiveMenuKey ?? menuItems.FirstOrDefault()?.Key??string.Empty);
 
 }
 <div class="row">
@@ -18,9 +18,10 @@
                 @foreach (var menuItem in menuItems)
                 {
                     <a 
-                        class="list-group-item list-group-item-action @((activeMenuItem?? string.Empty).ToLower() == @menuItem.Text.ToLower())? 
+                        class="list-group-item list-group-item-action @((activeMenuItem).ToLower() == @menuItem.Key.ToLower())? 
                        'active': 
                        ''" 
+                        id="menu@menuItem.Key"
                         href="@menuItem.NavigateUrl">@menuItem.Text</a>
                 }
             </div>

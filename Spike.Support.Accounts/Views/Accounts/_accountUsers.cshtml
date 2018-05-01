@@ -1,0 +1,9 @@
+﻿@model Spike.Support.Accounts.Models.AccountUsersViewModel
+@{
+    Html.RenderPartial("_accountDetail", Model.Account);
+}
+<div class="row">
+    <div class="col-lg-12">
+        @Html.Raw(Model.View)
+    </div>
+</div>

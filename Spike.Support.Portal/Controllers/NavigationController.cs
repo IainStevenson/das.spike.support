@@ -12,11 +12,11 @@ namespace Spike.Support.Portal.Controllers
 
         private List<NavItem> _systemMenu = new List<NavItem>()
         {
-            new NavItem(){ Key = "User.User", Text = "User", NavigateUrl = "views/users/{userId}"},
-            new NavItem(){ Key = "User.Account", Text = "Account", NavigateUrl = "views/accounts/{userId}"},
-            new NavItem(){ Key = "Account.Account", Text = "Account", NavigateUrl = "views/accounts/{accountId}"},
-            new NavItem(){ Key = "Account.Payments", Text = "Payments", NavigateUrl = "views/payments/accounts/{accountId}"},
-            new NavItem(){ Key = "Account.Users", Text = "Users", NavigateUrl = "views/accounts/{accountId}/users"},
+            new NavItem(){ Key = "User.User", Ordinal = 0, Text = "User", NavigateUrl = "views/users/{userId}"},
+            new NavItem(){ Key = "User.Accounts", Ordinal = 1, Text = "Account", NavigateUrl = "views/users/{userId}/accounts"},
+            new NavItem(){ Key = "Account.Account", Ordinal = 0, Text = "Account", NavigateUrl = "views/accounts/{accountId}"},
+            new NavItem(){ Key = "Account.Payments", Ordinal = 1, Text = "Payments", NavigateUrl = "views/accounts/{accountId}/payments"},
+            new NavItem(){ Key = "Account.Users", Ordinal = 2, Text = "Users", NavigateUrl = "views/accounts/{accountId}/users"},
         };
 
         [System.Web.Mvc.Route("api/navigation/{id}")]
@@ -28,7 +28,7 @@ namespace Spike.Support.Portal.Controllers
             foreach (var navItem in _systemMenu
                 .Where(
                         x=>x.Key.StartsWith($"{id??x.Key}.".Replace("..","."), StringComparison.CurrentCultureIgnoreCase)
-                    ))
+                    ).OrderBy(y=>y.Ordinal))
             {
                 menuItems.Add(navItem.Key, navItem);
             }

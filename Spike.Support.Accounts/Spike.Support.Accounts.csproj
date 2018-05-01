@@ -190,10 +190,11 @@
     <Content Include="Views\Accounts\accounts.cshtml" />
     <Content Include="Views\Accounts\_account.cshtml" />
     <Content Include="Views\Accounts\_accountDetails.cshtml" />
-    <Content Include="Views\Accounts\_accountDetailPayments.cshtml" />
-    <Content Include="Views\Accounts\_accountDetailUsers.cshtml" />
+    <Content Include="Views\Accounts\_accountPayments.cshtml" />
+    <Content Include="Views\Accounts\_accountUsers.cshtml" />
     <Content Include="Views\Accounts\_accountsChallenge.cshtml" />
     <Content Include="Views\Accounts\EndCall.cshtml" />
+    <Content Include="Views\Accounts\_accountDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

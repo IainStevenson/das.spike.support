@@ -42,9 +42,17 @@ namespace Spike.Support.Portal.Controllers
             var indexViewModel = new IndexViewModel();
 
             if (path.ToLower().StartsWith("users".ToLower()))
+            {
                 indexViewModel.UsersView = await _siteConnector.DownloadView(SupportServices.Users, $"{path}");
+            }
             if (path.ToLower().StartsWith("accounts".ToLower()))
+            {
                 indexViewModel.AccountsView = await _siteConnector.DownloadView(SupportServices.Accounts, $"{path}");
+            }
+            if (path.ToLower().StartsWith("payments".ToLower()))
+            {
+                indexViewModel.AccountsView = await _siteConnector.DownloadView(SupportServices.Payments, $"{path}");
+            }
             return View("index", indexViewModel);
         }
 

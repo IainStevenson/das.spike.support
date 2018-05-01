@@ -1,34 +1,4 @@
 ﻿@model Spike.Support.Accounts.Models.AccountDetailViewModel
-<div class="row">
-    <div class="col-md-12">
-        <hr/>
-        <h4>Account Details</h4>
-        <hr/>
-    </div>
-</div>
-<div class="row">
-
-    <div class="col-md-4">
-        @Html.LabelFor(model => model.Account.AccountId)
-    </div>
-    <div class="col-md-4">
-        @Html.LabelFor(model => model.Account.AccountName)
-    </div>
-    <div class="col-md-4">
-        @Html.LabelFor(model => model.Account.Created)
-    </div>
-</div>
-<div class="row">
-
-    <div class="col-md-4">
-        @Html.DisplayTextFor(model => model.Account.AccountId)
-    </div>
-    <div class="col-md-4">
-        <a href="~/views/accounts/@Model.Account.AccountId">@Html.DisplayTextFor(model => model.Account.AccountName)</a>
-    </div>
-    <div class="col-md-4">
-        @Html.DisplayTextFor(model => model.Account.Created)
-    </div>
-</div>
-@*@{ Html.RenderPartial("_accountDetailPayments", Model.View); }
-@{ Html.RenderPartial("_accountDetailUsers", Model.UsersView); }*@
+@{
+    Html.RenderPartial("_accountDetail", Model.Account);
+}

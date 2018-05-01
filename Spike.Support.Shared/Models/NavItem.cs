@@ -7,16 +7,11 @@ namespace Spike.Support.Shared.Models
     public class NavItem
     {
         public string Key { get; set; } = string.Empty;
-
-
         public string Text { get; set; } = string.Empty;
         public string NavigateUrl { get; set; } = "/";
         public int Ordinal { get; set; }
-
         public string[] Roles { get; set; } = new string[] { };
         public List<NavItem> NavItems { get; set; } = new List<NavItem>();
-
-
         public static List<NavItem> TransformNavItems(
             Dictionary<string, NavItem> templates, Uri baseUrl,
             Dictionary<string, string> identifiers)
