@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 
 namespace Spike.Support.Users.Models
 {
@@ -6,4 +7,12 @@ namespace Spike.Support.Users.Models
     {
         public List<UserViewModel> Users { get; set; }
     }
+
+
+    public class UserAccountsViewModel
+    {
+        public UserViewModel User { get; set; }
+        public MvcHtmlString View { get; set; }
+    }
+
 }

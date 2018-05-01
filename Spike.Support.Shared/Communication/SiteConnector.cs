@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 
 namespace Spike.Support.Shared.Communication
 {
@@ -32,6 +33,31 @@ namespace Spike.Support.Shared.Communication
             return await DownloadView(baseUrl, uri);
         }
 
+        public async Task<T> DownloadResources<T>(SupportServices serviceName, string uri)
+        {
+            var baseUrl = Services[serviceName];
+            var client = new HttpClient
+            {
+                BaseAddress = baseUrl
+            };
+            string content = null;
+            try
+            {
+                var response =  await client.GetAsync(uri);
+                if (response.IsSuccessStatusCode)
+                {
+                    content = await response.Content.ReadAsStringAsync();
+                    
+                }
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return content != null ?  JsonConvert.DeserializeObject<T>(content) : default(T);
+        }
 
         private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
         {

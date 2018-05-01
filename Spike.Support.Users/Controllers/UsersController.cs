@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Spike.Support.Shared;
+using Spike.Support.Shared.Models;
 using Spike.Support.Users.Models;
 
 namespace Spike.Support.Users.Controllers
 {
-    public class UsersController : Controller
+    public class UsersController : ViewControllerBase
     {
         private readonly UsersViewModel _usersViewModel = new UsersViewModel
         {
@@ -22,14 +24,17 @@ namespace Spike.Support.Users.Controllers
 
         [Route("")]
         [Route("users")]
-        public ActionResult Index()
+        public ActionResult Users()
         {
             return View("users", _usersViewModel);
         }
 
         [Route("users/{id:int}")]
-        public ActionResult Index(int id)
+        public ActionResult User(int id)
         {
+            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "userId", $"{id}" } });
+            ViewBag.ActiveMenu = "user";
+
             return View("users", new UsersViewModel
             {
                 Users = new List<UserViewModel>
@@ -40,9 +45,12 @@ namespace Spike.Support.Users.Controllers
         }
 
 
-        [Route("users/accounts/{id:int}")]
-        public ActionResult AccountUsers(int id)
+        [Route("users/{id:int}/accounts")]
+        public ActionResult UserAccounts(int id)
         {
+            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "userId", $"{id}" } });
+            ViewBag.ActiveMenu = "accounts";
+
             return View("users", new UsersViewModel
             {
                 Users = _usersViewModel.Users.Where(x => x.AccountId == id).ToList()

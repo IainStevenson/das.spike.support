@@ -2,19 +2,14 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Spike.Support.Shared;
 
 namespace Spike.Support.Accounts
 {
-    public class AgentAccountChallenge
-    {
-        public int AccountId { get; set; }
-        public string Identity { get; set; }
-        public DateTimeOffset Until { get; set; }
-    }
-
     public class MvcApplication : HttpApplication
     {
         
@@ -22,6 +17,10 @@ namespace Spike.Support.Accounts
 
         protected void Application_Start()
         {
+            HostingEnvironment
+                .RegisterVirtualPathProvider(
+                    new EmbeddedResourceViewPathProvider());
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

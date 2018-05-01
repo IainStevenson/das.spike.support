@@ -151,6 +151,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\NavigationController.cs" />
     <Compile Include="Models\EndCallViewModel.cs" />
     <Compile Include="Controllers\ViewsController.cs" />
     <Compile Include="Controllers\ResourcesController.cs" />

@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared;
-using Spike.Support.Shared.Communication;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Accounts.Controllers
 {
-    public class AccountsController : Controller
+    public class AccountsController : ViewControllerBase
     {
         private readonly AccountsViewModel _accountViewModels = new AccountsViewModel
         {
@@ -22,42 +23,83 @@ namespace Spike.Support.Accounts.Controllers
         };
 
 
-        private readonly ISiteConnector _siteConnector;
-       
-
-        public AccountsController()
-        {
-            _siteConnector = new SiteConnector();
-        }
-
         [Route("")]
         [Route("accounts")]
-        public ActionResult Index()
+        public ActionResult AccountDetail()
         {
+            ViewBag.Menu = null;
+            ViewBag.ActiveMenu = null;
+
             return View("accounts", _accountViewModels);
         }
 
+       
+
         [Route("accounts/{id:int}")]
-        public async Task<ActionResult> Index(int id)
+        public async Task<ActionResult> AccountDetail(int id)
+        {
+            
+            var accountDetailsViewModel = new AccountDetailViewModel
+            {
+                Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
+            };
+
+            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() {{"accountId", $"{id}"}});
+            ViewBag.ActiveMenu = "account";
+
+            return View("_accountDetails", accountDetailsViewModel);
+        }
+
+
+        [Route("accounts/{id:int}/payments")]
+        public async Task<ActionResult> AccountPayments(int id)
         {
             if (ChallengeRequest(id))
             {
-                return RedirectToAction("AccountsChallenge", new { id = id,
-                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}" });
+                return RedirectToAction("AccountsChallenge", new
+                {
+                    id = id,
+                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}"
+                });
             }
 
             var paymentsView = await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}");
+           
+            var accountDetailsViewModel = new AccountDetailViewModel
+            {
+                Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
+                View = paymentsView,
+                
+            };
+
+            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "accountId", $"{id}" } });
+            ViewBag.ActiveMenu = "payments";
+
+
+
+
+            return View("_accountDetails", accountDetailsViewModel);
+        }
+
+
+
+        [Route("accounts/{id:int}/users")]
+        public async Task<ActionResult> AccountUsers(int id)
+        {
+
             var usersView = await _siteConnector.DownloadView(SupportServices.Portal, $"resources/users/accounts/{id}/");
 
             var accountDetailsViewModel = new AccountDetailViewModel
             {
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
-                PaymentsView = paymentsView,
-                UsersView = usersView
+                View = usersView
             };
 
+            ViewBag.Menu = NavItem.GetItems(_menuItems, new Dictionary<string, string>() { { "accountId", $"{id}" } });
+            ViewBag.ActiveMenu = "users";
             return View("_accountDetails", accountDetailsViewModel);
         }
+
 
 
         private bool ChallengeRequest(int id)
@@ -68,7 +110,7 @@ namespace Spike.Support.Accounts.Controllers
                            && x.Value.Identity == null
                            && x.Value.Until > DateTimeOffset.UtcNow).Value == null;
         }
-        
+
         private void AddChallengePass(int id)
         {
             MvcApplication.AccountChallenges.AddOrUpdate(Guid.NewGuid(), new AgentAccountChallenge()
@@ -76,7 +118,7 @@ namespace Spike.Support.Accounts.Controllers
                 AccountId = id,
                 Until = DateTimeOffset.UtcNow.AddSeconds(15)
             }, (guid, challenge) => { return challenge; });
-            
+
         }
 
         public ActionResult AccountsChallenge(int id, string returnTo)
@@ -92,6 +134,7 @@ namespace Spike.Support.Accounts.Controllers
                 ReturnTo = returnTo,
                 ResponseUrl = $"{_siteConnector.Services[SupportServices.Accounts]}accounts/challenge/response"
             };
+
             return View("_accountsChallenge", model);
         }
 
@@ -128,7 +171,7 @@ namespace Spike.Support.Accounts.Controllers
             //var itemsToDelete = MvcApplication.AccountChallenges.Where(x => x.Value.Identity == identity).ToList();
             //foreach (var agentAccountChallenge in itemsToDelete)
             //{
-                
+
             //}
 
             return View("EndCall");

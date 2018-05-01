@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Payments.Models;
+using Spike.Support.Shared;
 
 namespace Spike.Support.Payments.Controllers
 {
-    public class PaymentsController : Controller
+    public class PaymentsController : ViewControllerBase
     {
         private readonly PaymentsViewModel _paymentsViewModels;
         
@@ -48,12 +49,12 @@ namespace Spike.Support.Payments.Controllers
             });
         }
 
-        [Route("payments/accounts/{id:int}")]
-        public ActionResult AccountPayments(int id)
+        [Route("payments/accounts/{accountId:int}")]
+        public ActionResult AccountPayments(int accountId)
         {
             var paymentsViewModel = new PaymentsViewModel
             {
-                Payments = _paymentsViewModels.Payments.Where(x => x.AccountId == id).ToList()
+                Payments = _paymentsViewModels.Payments.Where(x => x.AccountId == accountId).ToList()
             };
             return View("_accountPaymentDetails", paymentsViewModel);
         }

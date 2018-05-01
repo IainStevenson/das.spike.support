@@ -1,0 +1,34 @@
+﻿@using System.Web.UI.WebControls
+@{
+    var menuItems = ((ViewBag.Menu ?? new Dictionary<string, Uri>()) as Dictionary<string, Uri>);
+    var activeMenuItem = (ViewBag.ActiveMenu?? menuItems.Keys.FirstOrDefault());
+
+}
+<div class="row">
+    <div class="col-lg-12" id="panelHeader">
+        @Html.Raw(ViewBag.Header?? string.Empty)
+    </div>    
+</div>
+<div class="row">
+    @if (menuItems.Any())
+    {
+        <div class="col-lg-2" id="panelNavigation">
+            <div class="list-item-group">
+            @foreach (var menuItem in menuItems)
+            {
+                <a class="list-group-item list-group-item-action @((activeMenuItem?? string.Empty).ToLower() == @menuItem.Key.ToLower())? 'active': ''" href="@menuItem.Value">@menuItem.Key</a>
+            }
+            </div>
+        </div>
+        <div class="col-lg-10" id="panelContent">
+            @RenderBody()
+        </div>
+    }
+    else
+    {
+        <div class="col-lg-12" id="panelContent">
+            @RenderBody()
+        </div>
+    }
+    
+</div>
