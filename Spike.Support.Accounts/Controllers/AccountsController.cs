@@ -62,7 +62,8 @@ namespace Spike.Support.Accounts.Controllers
             ConfigureMenu(_menuType,
                 entityType,
                 new List<string> {entityType},
-                new Dictionary<string, string> {{"accountId", $"{id}"}}
+                new Dictionary<string, string> {{"accountId", $"{id}"}},
+                MenuOrientations.Vertical
                 );
 
             return View("_accountDetails", accountDetailsViewModel);
@@ -96,7 +97,8 @@ namespace Spike.Support.Accounts.Controllers
                 _menuType,
                 entityType,
                 new List<string> {$"{entityType}", $"{entityType}.In"},
-                new Dictionary<string, string> {{"accountId", $"{id}"}}
+                new Dictionary<string, string> {{"accountId", $"{id}"}},
+                MenuOrientations.Horizontal
                 );
 
             return View("_accountPayments", accountPaymentsViewModel);
@@ -131,7 +133,8 @@ namespace Spike.Support.Accounts.Controllers
                 _menuType,
                 entityType,
                 new List<string> { $"{entityType}", $"{entityType}.Out"},
-                new Dictionary<string, string> {{"accountId", $"{id}"}}
+                new Dictionary<string, string> {{"accountId", $"{id}"}},
+                MenuOrientations.Horizontal
                 );
 
             return View("_accountPayments", accountPaymentsViewModel);
@@ -164,8 +167,9 @@ namespace Spike.Support.Accounts.Controllers
 
             ConfigureMenu(_menuType,
                 entityType,
-                new List<string> { entityType},
-                new Dictionary<string, string> {{"accountId", $"{id}"}}
+                new List<string> { $"{entityType}", $"{entityType}.All"},
+                new Dictionary<string, string> {{"accountId", $"{id}"}},
+                MenuOrientations.Horizontal
                 );
 
             return View("_accountPayments", accountPaymentsViewModel);
@@ -194,7 +198,8 @@ namespace Spike.Support.Accounts.Controllers
                     _menuType, 
                     entityType, 
                     new List<string>(){ entityType }, 
-                    new Dictionary<string, string>(){{"accountId",$"{id}"}} 
+                    new Dictionary<string, string>(){{"accountId",$"{id}"}},
+                    MenuOrientations.Vertical
                 );
 
             return View("_accountUsers", accountUsersViewModel);
@@ -218,7 +223,8 @@ namespace Spike.Support.Accounts.Controllers
                 _menuType,
                 entityType,
                 new List<string>() { entityType },
-                new Dictionary<string, string>() { { "accountId", $"{identifier}" } }
+                new Dictionary<string, string>() { { "accountId", $"{identifier}" } },
+                MenuOrientations.Vertical
             );
 
             return View("_accountsChallenge", model);
@@ -252,7 +258,7 @@ namespace Spike.Support.Accounts.Controllers
         private void ConfigureMenu(string menuSelector,
             string selectedRoot,
             List<string> selectedItems,
-            Dictionary<string, string> identifiers
+            Dictionary<string, string> identifiers, MenuOrientations orientation
             )
         {
             if (Request.Headers.AllKeys.Contains("X-Resource")) return;
@@ -268,7 +274,7 @@ namespace Spike.Support.Accounts.Controllers
                     _siteConnector.Services[SupportServices.Portal],
                     identifiers
                 ).Select(s => s.Value).ToList(),
-                Level = selectedItems.Count -1
+                MenuOrientation = orientation
             };
         }
 

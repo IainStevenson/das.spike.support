@@ -21,5 +21,12 @@ namespace Spike.Support.Shared.Models
         /// </summary>
         public int Level { get; set; }
 
+        public MenuOrientations MenuOrientation { get; set; }
+    }
+
+    public enum MenuOrientations
+    {
+        Vertical,
+        Horizontal
     }
 }

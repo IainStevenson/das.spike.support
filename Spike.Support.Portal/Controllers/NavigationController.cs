@@ -43,16 +43,23 @@ namespace Spike.Support.Portal.Controllers
                 {
                     new NavItem()
                     {
-                        Key = "Account.Payments.In",
+                        Key = "Account.Payments.All",
                         Ordinal = 0,
-                        Text = "Incoming",
+                        Text = "All",
+                        NavigateUrl = "views/accounts/{accountId}/payments",
+                    },
+                    new NavItem()
+                    {
+                        Key = "Account.Payments.In",
+                        Ordinal = 1,
+                        Text = "Recieved",
                         NavigateUrl = "views/accounts/{accountId}/payments/in",
                     },
                     new NavItem()
                     {
                         Key = "Account.Payments.Out",
-                        Ordinal = 1,
-                        Text = "Outgoing",
+                        Ordinal = 2,
+                        Text = "Made",
                         NavigateUrl = "views/accounts/{accountId}/payments/out",
                     }
                 }
