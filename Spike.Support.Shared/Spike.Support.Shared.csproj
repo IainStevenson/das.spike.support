@@ -71,6 +71,7 @@
     <Compile Include="EmbeddedResourceFile.cs" />
     <Compile Include="EmbeddedResourceViewPathProvider.cs" />
     <Compile Include="Communication\ISiteConnector.cs" />
+    <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\NavItem.cs" />
     <Compile Include="Models\NavItemExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,6 +81,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <EmbeddedResource Include="Views\Shared\PanelLayout.cshtml" />
+    <EmbeddedResource Include="Views\Shared\_navigation.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,29 +1,31 @@
-﻿@using System.Web.UI.WebControls
-@using Spike.Support.Shared.Models
+﻿@using Spike.Support.Shared.Models
 @{
-    var menuItems = ((ViewBag.Menu ?? new List<NavItem>()) as List<NavItem>);
-    var activeMenuItem = (ViewBag.ActiveMenuItemKey ?? menuItems.FirstOrDefault()?.Key??string.Empty);
-
+    Menu menu = (ViewBag ?? new {}).Menu ?? new Menu() { NavItems = new List<NavItem>()};
+    List<NavItem> menuItems = menu.NavItems;
 }
 <div class="row">
     <div class="col-lg-12" id="panelHeader">
-        @Html.Raw(ViewBag.Header?? string.Empty)
-    </div>    
+        @Html.Raw((ViewBag ?? new { }).Header ?? string.Empty)
+    </div>
 </div>
 <div class="row">
-    @if (menuItems.Any())
+    @if (menuItems.Count > 0)
     {
+        var activeMenuItem = (menu.ActiveMenuItemKeys.FirstOrDefault() ?? string.Empty);
+        var orientation = "lex-column";
+
         <div class="col-lg-2" id="panelNavigation">
-            <div class="list-item-group">
+            <ul class="nav nav-pills @orientation">
                 @foreach (var menuItem in menuItems)
                 {
-                    var active = (activeMenuItem.ToLower() == @menuItem.Key.ToLower()? "active": "");
-                    <a 
-                        class="list-group-item list-group-item-action @active" 
-                        id="menu@menuItem.Key"
-                        href="@menuItem.NavigateUrl">@menuItem.Text</a>
+                    var isActive = (activeMenuItem.ToLower() == @menuItem.Key.ToLower() ? "active" : "");
+                    <li class="nav-item">
+                        <a class="nav-link @isActive"
+                           id="menu@menuItem.Key"
+                           href="@menuItem.NavigateUrl">@menuItem.Text</a>
+                    </li>
                 }
-            </div>
+            </ul>
         </div>
         <div class="col-lg-10" id="panelContent">
             @RenderBody()
@@ -35,5 +37,5 @@
             @RenderBody()
         </div>
     }
-    
+
 </div>
