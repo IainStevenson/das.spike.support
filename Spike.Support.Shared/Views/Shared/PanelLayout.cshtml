@@ -12,9 +12,9 @@
     @if (menuItems.Count > 0)
     {
         var activeMenuItem = (menu.ActiveMenuItemKeys.FirstOrDefault() ?? string.Empty);
-        var orientation = "lex-column";
+        var orientation = "flex-column";
 
-        <div class="col-md-1" id="panelNavigation">
+        <div class="col-md-2" id="panelNavigation">
             <ul class="nav nav-pills @orientation">
                 @foreach (var menuItem in menuItems)
                 {
@@ -27,7 +27,7 @@
                 }
             </ul>
         </div>
-        <div class="col-md-11" id="panelContent">
+        <div class="col-md-10" id="panelContent">
             @RenderBody()
         </div>
     }

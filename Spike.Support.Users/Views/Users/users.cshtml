@@ -1,36 +1,33 @@
 ﻿@model Spike.Support.Users.Models.UsersViewModel
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <hr/>
-            <h4>Users</h4>
-            <hr/>
-        </div>
+<div class="row">
+    <div class="col-md-12">
+        <hr />
+        <h4>Users</h4>
+        <hr />
     </div>
-    @foreach (var item in Model.Users)
+</div>
+@foreach (var item in Model.Users)
+{
+    if (item.AccountId == Model.Users.First().AccountId)
     {
-        if (item.AccountId == Model.Users.First().AccountId)
-        {
-            <div class="row">
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.UserId)
-                </div>
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.AccountId)
-                </div>
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.UserName)
-                </div>
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.Created)
-                </div>
-            </div>
-        }
         <div class="row">
-            @{
-                Html.RenderPartial("_user", item);
-            }
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.UserId)
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.AccountId)
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.UserName)
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.Created)
+            </div>
         </div>
     }
-</div>
+    <div class="row">
+        @{
+            Html.RenderPartial("_user", item);
+        }
+    </div>
+}

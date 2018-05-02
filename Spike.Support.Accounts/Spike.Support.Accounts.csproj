@@ -193,7 +193,6 @@
     <Content Include="Views\Accounts\_accountPayments.cshtml" />
     <Content Include="Views\Accounts\_accountUsers.cshtml" />
     <Content Include="Views\Accounts\_accountsChallenge.cshtml" />
-    <Content Include="Views\Accounts\EndCall.cshtml" />
     <Content Include="Views\Accounts\_accountDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>

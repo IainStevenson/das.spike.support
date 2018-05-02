@@ -42,7 +42,7 @@ namespace Spike.Support.Portal.Controllers
         public async Task<bool> Clear(string identity)
         {
             var itemList = MvcApplication.SupportAgentChallenges.Where(
-                f => f.Value.Identity == identity
+                f => f.Value.Identity.Equals(identity, StringComparison.InvariantCultureIgnoreCase)
             ).Select(x => x.Key).ToList();
 
             foreach (var id in itemList) MvcApplication.SupportAgentChallenges.Remove(id);

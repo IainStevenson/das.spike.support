@@ -9,7 +9,13 @@
     @Html.HiddenFor(m => m.EntityType)
     @Html.HiddenFor(m => m.Identity)
     @Html.HiddenFor(m => m.ReturnTo)
-    @Html.LabelFor(m => m.Challenge)
-    @Html.TextBoxFor(m => m.Response)
-    <input type="submit" value="Hit It" />
+    <div class="col-md-2">
+        @Html.LabelFor(m => m.Challenge)
+    </div>
+    <div class="col-md-8">
+        @Html.TextBoxFor(m => m.Response)
+    </div>
+    <div class="col-md-2">
+        <input type="submit" value="Hit It" />
+    </div>
 }

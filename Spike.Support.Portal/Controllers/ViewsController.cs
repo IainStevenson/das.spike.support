@@ -60,14 +60,10 @@ namespace Spike.Support.Portal.Controllers
         [Route("endcall/{identity?}")]
         public async Task<ActionResult> EndCall(string identity)
         {
-            // call all of the sites to clear call authorisation
-            var model = new EndCallViewModel();
-            foreach (SupportServices supportService in _siteConnector.Services.Keys.Where(x=>x != SupportServices.Portal))
-            {
-                model.ServiceViews.Add(await _siteConnector.DownloadView(supportService, $"endcall"));
-            }
+            
+            await _siteConnector.Challenge($"api/challenge/clear/{identity??"anonymous"}");
 
-            return View("EndCall", model);
+            return View("EndCall", new EndCallViewModel());
         }
     }
 }
