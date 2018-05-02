@@ -22,6 +22,20 @@ namespace Spike.Support.Shared.Models
         public int Level { get; set; }
 
         public MenuOrientations MenuOrientation { get; set; }
+
+        public static Menu ConfigureMenu(List<NavItem> menuNavItems,
+            string selectedRoot,
+            List<string> selectedItems,
+            MenuOrientations orientation)
+        {
+            return new Menu
+            {
+                ActiveMenuItemKeys = selectedItems,
+                ActiveMenuRootKey = selectedRoot,
+                NavItems = menuNavItems,
+                MenuOrientation = orientation
+            };
+        }
     }
 
     public enum MenuOrientations
