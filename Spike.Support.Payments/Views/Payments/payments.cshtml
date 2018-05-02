@@ -1,35 +1,38 @@
-﻿@model Spike.Support.Payments.Models.PaymentsViewModel
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <hr/>
-            <h4>Payments</h4>
-            <hr/>
-        </div>
+﻿@using Spike.Support.Shared.Models
+@model Spike.Support.Payments.Models.PaymentsViewModel
+<div class="row">
+    <div class="col-md-12">
+        <hr />
+        <h4>Payments</h4>
+        <hr />
     </div>
-    @foreach (var item in Model.Payments)
+</div>
+
+@foreach (var item in Model.Payments)
+{
+    if (item.AccountId == Model.Payments.First().AccountId)
     {
-        if (item.AccountId == Model.Payments.First().AccountId)
-        {
-            <div class="row">
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.PaymentId)
-                </div>
-                @*<div class="col-md-3">
-                    @Html.LabelFor(model => item.AccountId)
-                </div>*@
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.Created)
-                </div>
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.Amount)
-                </div>
-            </div>
-        }
         <div class="row">
-            @{
-                Html.RenderPartial("_payment", item);
-            }
+            <div class="col-md-2">
+                @Html.LabelFor(model => item.PaymentId)
+            </div>
+            <div class="col-md-2">
+                <a href="~/views/accounts/@item.AccountId">Account @Html.Display($"{item.AccountId}")</a>
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.Created)
+            </div>
+            <div class="col-md-2">
+                @Html.LabelFor(model => item.Amount)
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.Amount)
+            </div>
         </div>
     }
-</div>
+    <div class="row">
+        @{
+            Html.RenderPartial("_payment", item);
+        }
+    </div>
+}

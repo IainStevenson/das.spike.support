@@ -24,6 +24,7 @@ namespace Spike.Support.Accounts.Controllers
         };
 
         private readonly ISiteConnector _siteConnector;
+        private string _menuType = "Account";
 
         public AccountsController()
         {
@@ -35,7 +36,7 @@ namespace Spike.Support.Accounts.Controllers
             {
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
                                 SupportServices.Portal,
-                                "api/navigation/account") ?? new Dictionary<string, NavItem>();
+                                "api/navigation/templates") ?? new Dictionary<string, NavItem>();
 
             }
             base.OnActionExecuting(filterContext);
@@ -59,12 +60,69 @@ namespace Spike.Support.Accounts.Controllers
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
             };
 
-            SetMenu(id, "Account.Account");
+            SetMenu(id, "Account.Account", "Account", null);
 
             return View("_accountDetails", accountDetailsViewModel);
         }
 
+        [Route("accounts/{id:int}/payments/in")]
+        public async Task<ActionResult> AccountPaymentsIn(int id)
+        {
+            var entityType = "Account.Payments";
+            var identityName = GetIdentityOfCaller();
+            if (await _siteConnector.Challenge(
+                $"api/challenge/required/{entityType}/{id}/{identityName}"))
+            {
+                return RedirectToAction("AccountsChallenge", new
+                {
+                    entityType,
+                    identifier = id,
+                    identity = identityName,
+                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/in"
+                });
+            }
 
+            var paymentsView = await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/in");
+
+            var accountPaymentsViewModel = new AccountPaymentsViewModel
+            {
+                Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
+                View = paymentsView,
+            };
+
+            SetMenu(id, $"{entityType}.In", _menuType, entityType);
+
+            return View("_accountPayments", accountPaymentsViewModel);
+        }
+        [Route("accounts/{id:int}/payments/out")]
+        public async Task<ActionResult> AccountPaymentsOut(int id)
+        {
+            var entityType = "Account.Payments";
+            var identityName = GetIdentityOfCaller();
+            if (await _siteConnector.Challenge(
+                $"api/challenge/required/{entityType}/{id}/{identityName}"))
+            {
+                return RedirectToAction("AccountsChallenge", new
+                {
+                    entityType,
+                    identifier = id,
+                    identity = identityName,
+                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out"
+                });
+            }
+
+            var paymentsView = await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/out");
+
+            var accountPaymentsViewModel = new AccountPaymentsViewModel
+            {
+                Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
+                View = paymentsView,
+            };
+
+            SetMenu(id, $"{entityType}.Out", _menuType, entityType);
+
+            return View("_accountPayments", accountPaymentsViewModel);
+        }
         [Route("accounts/{id:int}/payments")]
         public async Task<ActionResult> AccountPayments(int id)
         {
@@ -92,24 +150,28 @@ namespace Spike.Support.Accounts.Controllers
 
             };
 
-            SetMenu(id, entityType);
+            SetMenu(id, entityType, _menuType, entityType);
 
             return View("_accountPayments", accountPaymentsViewModel);
         }
 
-        private void SetMenu(int id, string selectedItem)
+        private void SetMenu(int id, string selectedItem, string menuSelector = "Account", string selectedRoot = null)
         {
             ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems,
+                MvcApplication.NavItems
+                    .Where(x => x.Key.StartsWith($"{menuSelector}"))
+                        .ToDictionary(x=>x.Key,x=> x.Value),
                 _siteConnector.Services[SupportServices.Portal],
                 new Dictionary<string, string>() { { "accountId", $"{id}" } }
-            );
-            ViewBag.ActiveMenuKey = selectedItem;
+            ).Select(s=>s.Value).ToList();
+
+            ViewBag.ActiveMenuItemKey = selectedItem;
+            ViewBag.ActiveMenuRootKey = selectedRoot;
         }
 
         private string GetIdentityOfCaller()
         {
-            return  "Anonymous";//Request.RequestContext?.HttpContext.User?.Identity?.Name ??
+            return "Anonymous";//Request.RequestContext?.HttpContext.User?.Identity?.Name ??
         }
 
 

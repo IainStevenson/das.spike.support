@@ -6,11 +6,12 @@ using Spike.Support.Portal.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
+    [RoutePrefix("api/challenge")]
     public class ChallengeController : ApiController
     {
         private readonly short _challengeTimeoutMinutes = 1;
         [HttpGet]
-        [Route("api/challenge/required/{entityType}/{identifier}/{identity}")] // 
+        [Route("required/{entityType}/{identifier}/{identity}")] // 
         public async Task<bool> Required(string entityType, string identifier, string identity)
         {
             var item = MvcApplication.SupportAgentChallenges.Values.FirstOrDefault(x =>
@@ -22,7 +23,7 @@ namespace Spike.Support.Portal.Controllers
         }
 
         [HttpGet]
-        [Route("api/challenge/passed/{entityType}/{identifier}/{identity}")]
+        [Route("passed/{entityType}/{identifier}/{identity}")]
         public async Task<bool> Passed(string entityType, string identifier, string identity)
         {
             var item = new SupportAgentChallenge
@@ -37,8 +38,8 @@ namespace Spike.Support.Portal.Controllers
         }
 
         [HttpGet]
-        [Route("api/challenge/clear/{identity}")]
-        public async Task<bool> EndCall(string identity)
+        [Route("clear/{identity}")]
+        public async Task<bool> Clear(string identity)
         {
             var itemList = MvcApplication.SupportAgentChallenges.Where(
                 f => f.Value.Identity == identity

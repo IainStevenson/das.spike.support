@@ -1,36 +1,38 @@
 ﻿@model Spike.Support.Payments.Models.PaymentsViewModel
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <hr/>
-            <h4>Payments</h4>
-            <hr/>
-        </div>
-    </div>
 
-    @foreach (var item in Model.Payments)
+<div class="row">
+    <div class="col-md-12">
+        <hr />
+        <h4>Payments</h4>
+        <hr />
+    </div>
+</div>
+
+@foreach (var item in Model.Payments)
+{
+    if (item.PaymentId == Model.Payments.First().PaymentId)
     {
-        if (item.PaymentId == Model.Payments.First().PaymentId)
-        {
-            <div class="row">
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.PaymentId)
-                </div>
-                @*<div class="col-md-3">
-                    @Html.LabelFor(model => item.AccountId)
-                </div>*@
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.Created)
-                </div>
-                <div class="col-md-3">
-                    @Html.LabelFor(model => item.Amount)
-                </div>
-            </div>
-        }
         <div class="row">
-            @{
-                Html.RenderPartial("_payment", item);
-            }
+            <div class="col-md-2">
+                @Html.LabelFor(model => item.PaymentId)
+            </div>
+            <div class="col-md-2">
+                @Html.LabelFor(model => item.AccountId)
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.Created)
+            </div>
+            <div class="col-md-2">
+                @Html.LabelFor(model => item.Direction)
+            </div>
+            <div class="col-md-3">
+                @Html.LabelFor(model => item.Amount)
+            </div>
         </div>
     }
-</div>
+    <div class="row">
+        @{
+            Html.RenderPartial("_payment", item);
+        }
+    </div>
+}

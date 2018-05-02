@@ -14,14 +14,14 @@ namespace Spike.Support.Payments.Controllers
         private readonly PaymentsViewModel _paymentsViewModels;
         private readonly ISiteConnector _siteConnector;
 
-       
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!MvcApplication.NavItems.Any())
             {
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
-                    SupportServices.Portal, 
-                    "api/navigation/payment") ?? new Dictionary<string, NavItem>();
+                    SupportServices.Portal,
+                    "api/navigation/templates") ?? new Dictionary<string, NavItem>();
 
             }
             base.OnActionExecuting(filterContext);
@@ -36,12 +36,13 @@ namespace Spike.Support.Payments.Controllers
                     new PaymentViewModel
                     {
                         AccountId = x % 100,
-                        PaymentId = Guid.NewGuid(),
-                        Created = DateTime.Now.AddMonths(-x),
-                        Amount = x * 1000
+                        PaymentId = x,
+                        Created = DateTimeOffset.UtcNow.AddDays(-x * 7),
+                        Direction =  (x % 3 == 0 ? "In" : "Out")   ,
+                        Amount = (x % 3 == 0 ? x * 1000 : x * -1000)
                     }).ToList()
             };
-            
+
         }
 
         [Route("")]
@@ -52,9 +53,9 @@ namespace Spike.Support.Payments.Controllers
         }
 
         [Route("payments/{id:guid}")]
-        public ActionResult Index(Guid id)
+        public ActionResult Index(int id)
         {
-             var paymentsViewModel = new List<PaymentViewModel>
+            var paymentsViewModel = new List<PaymentViewModel>
             {
                 _paymentsViewModels.Payments.FirstOrDefault(x => x.PaymentId == id)
             };
@@ -64,12 +65,14 @@ namespace Spike.Support.Payments.Controllers
             });
         }
 
-        [Route("payments/accounts/{accountId:int}")]
-        public ActionResult AccountPayments(int accountId)
+        [Route("payments/accounts/{accountId:int}/{direction?}")]
+        public ActionResult AccountPayments(int accountId, string direction = null)
         {
             var paymentsViewModel = new PaymentsViewModel
             {
-                Payments = _paymentsViewModels.Payments.Where(x => x.AccountId == accountId).ToList()
+                Payments = _paymentsViewModels.Payments
+                    .Where(x => x.AccountId == accountId && x.Direction.Equals((direction ?? x.Direction), StringComparison.InvariantCultureIgnoreCase))
+                    .ToList()
             };
             return View("_accountPaymentDetails", paymentsViewModel);
         }

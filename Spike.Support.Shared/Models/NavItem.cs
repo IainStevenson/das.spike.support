@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Spike.Support.Shared.Models
 {
@@ -10,31 +11,43 @@ namespace Spike.Support.Shared.Models
         public string Text { get; set; } = string.Empty;
         public string NavigateUrl { get; set; } = "/";
         public int Ordinal { get; set; }
-        public string[] Roles { get; set; } = new string[] { };
+        public string[] Roles { get; set; } = { };
         public List<NavItem> NavItems { get; set; } = new List<NavItem>();
-        public static List<NavItem> TransformNavItems(
+
+        public static Dictionary<string, NavItem> TransformNavItems(
             Dictionary<string, NavItem> templates, Uri baseUrl,
             Dictionary<string, string> identifiers)
         {
-            List<NavItem> menuItems = new List<NavItem>();
+            
+            var templateCopies = JsonConvert.DeserializeObject<Dictionary<string, NavItem>>(
+                                 JsonConvert.SerializeObject(templates)
+                );
 
-            foreach (var template in templates)
+            var menuItems = templateCopies
+                .Select(i => i.Value)
+                .Map(s => true, n => n.NavItems).ToList();
+
+            foreach (var menuItem in menuItems)
             {
-                var item = new NavItem
-                {
-                    Key = template.Key,
-                    Text = template.Value.Text,
-                    NavigateUrl = new Uri(baseUrl, template.Value.NavigateUrl).OriginalString
-                };
                 foreach (var identifier in identifiers)
                 {
-                    item.NavigateUrl = item.NavigateUrl
-                        .Replace($"{{{identifier.Key.Split('.').LastOrDefault() ?? string.Empty}}}", 
-                            identifier.Value);
+                    menuItem.NavigateUrl =
+                        new Uri(baseUrl, menuItem.NavigateUrl)
+                            .OriginalString
+                                .Replace($"{{{identifier.Key.Split('.').LastOrDefault() ?? string.Empty}}}",
+                                    identifier.Value);
                 }
-                menuItems.Add(item);
             }
-            return menuItems;
+            //// remove navigations with untransformed variables.
+            //foreach (var menuItem in menuItems.ToList())
+            //{
+            //    if (menuItem.NavigateUrl.Contains("/{"))
+            //    {
+            //        menuItems.Remove(menuItem);
+            //    }
+            //}
+
+            return templateCopies;
         }
     }
 }

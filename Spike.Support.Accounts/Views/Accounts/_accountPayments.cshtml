@@ -1,6 +1,39 @@
-﻿@model Spike.Support.Accounts.Models.AccountPaymentsViewModel
+﻿@using Spike.Support.Shared.Models
+@model Spike.Support.Accounts.Models.AccountPaymentsViewModel
 @{
     Html.RenderPartial("_accountDetail", Model.Account);
+
+    var menuItems = ((List<NavItem>)(ViewBag.Menu ?? new List<NavItem>()));
+
+    var activeMenuItemKey = (ViewBag.ActiveMenuItemKey ?? menuItems.FirstOrDefault()?.Key ?? string.Empty);
+    var activeMenuRootKey = (ViewBag.ActiveMenuRootKey ?? menuItems.FirstOrDefault()?.Key ?? string.Empty);
+
+    var activeMenuRoot = menuItems.FirstOrDefault(x => x.Key == activeMenuRootKey);
+
+
+    if (menuItems.Any() && activeMenuRoot != null)
+    {
+        var isActive = activeMenuItemKey == activeMenuRootKey ? "active" : "";
+
+        /* The selected (active) menu item should have submenus' to display
+            as a pill based sub menu across the top of the payments*/
+        <div class="row">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link @isActive" id="@activeMenuRoot.Key" href="@activeMenuRoot.NavigateUrl">@activeMenuRoot.Text</a>
+                </li>
+                @foreach (var subMenuItem in activeMenuRoot.NavItems)
+                {
+                    isActive = subMenuItem.Key == activeMenuItemKey ? "active" : "";
+                    <li class="nav-item">
+                        <a class="nav-link @isActive" 
+                           id="@subMenuItem.Key" 
+                           href="@subMenuItem.NavigateUrl">@subMenuItem.Text</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
 }
 <div class="row">
     <div class="col-lg-12">

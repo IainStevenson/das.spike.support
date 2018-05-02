@@ -2,7 +2,7 @@
 @using Spike.Support.Shared.Models
 @{
     var menuItems = ((ViewBag.Menu ?? new List<NavItem>()) as List<NavItem>);
-    var activeMenuItem = (ViewBag.ActiveMenuKey ?? menuItems.FirstOrDefault()?.Key??string.Empty);
+    var activeMenuItem = (ViewBag.ActiveMenuItemKey ?? menuItems.FirstOrDefault()?.Key??string.Empty);
 
 }
 <div class="row">

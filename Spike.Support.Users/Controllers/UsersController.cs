@@ -34,7 +34,7 @@ namespace Spike.Support.Users.Controllers
             {
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
                     SupportServices.Portal,
-                    "api/navigation/user") ?? new Dictionary<string, NavItem>();
+                    "api/navigation/templates") ?? new Dictionary<string, NavItem>();
             }
             base.OnActionExecuting(filterContext);
         }
@@ -74,15 +74,16 @@ namespace Spike.Support.Users.Controllers
             });
         }
 
-        private void SetMenu(int id, string selectedItem)
+        private void SetMenu(int id, string selectedItem, string menuSelector = "Account")
         {
             if (Request.Headers.AllKeys.Contains("X-Resource")) return;
 
             ViewBag.Menu = NavItem.TransformNavItems(
-                MvcApplication.NavItems,
+                MvcApplication.NavItems.Where(x => x.Key.StartsWith($"{menuSelector}")).ToDictionary(x => x.Key, x => x.Value),
                 _siteConnector.Services[SupportServices.Portal],
-                new Dictionary<string, string>() { { "userId", $"{id}" } });
-            ViewBag.ActiveMenuKey = selectedItem;
+                new Dictionary<string, string>() { { "userId", $"{id}" } })
+                .Select(s => s.Value).ToList();
+            ViewBag.ActiveMenuItemKey = selectedItem;
         }
     }
 }

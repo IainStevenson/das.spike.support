@@ -1,12 +1,15 @@
 ﻿@model Spike.Support.Payments.Models.PaymentViewModel
-<div class="col-md-3">
+<div class="col-md-2">
     @Html.DisplayTextFor(model => model.PaymentId)
 </div>
-@*<div class="col-md-3">
+<div class="col-md-2">
     <a href="~/views/accounts/@Model.AccountId">Account @Html.DisplayTextFor(model => model.AccountId)</a>
-</div>*@
+</div>
 <div class="col-md-3">
     @Html.DisplayTextFor(model => model.Created)
+</div>
+<div class="col-md-2">
+    @Html.DisplayTextFor(model => model.Direction)
 </div>
 <div class="col-md-3">
     @Html.DisplayTextFor(model => model.Amount)
