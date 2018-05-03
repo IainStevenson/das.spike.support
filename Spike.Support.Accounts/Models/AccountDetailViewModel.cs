@@ -7,7 +7,6 @@ namespace Spike.Support.Accounts.Models
         public AccountViewModel Account { get; set; }
 
         public MvcHtmlString View { get; set; }
-        
     }
 
     public class AccountUsersViewModel
@@ -15,7 +14,6 @@ namespace Spike.Support.Accounts.Models
         public AccountViewModel Account { get; set; }
 
         public MvcHtmlString View { get; set; }
-
     }
 
     public class AccountPaymentsViewModel
@@ -23,6 +21,5 @@ namespace Spike.Support.Accounts.Models
         public AccountViewModel Account { get; set; }
 
         public MvcHtmlString View { get; set; }
-
     }
 }

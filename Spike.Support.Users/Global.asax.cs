@@ -12,6 +12,7 @@ namespace Spike.Support.Users
     public class MvcApplication : HttpApplication
     {
         public static Dictionary<string, NavItem> NavItems = new Dictionary<string, NavItem>();
+
         protected void Application_Start()
         {
             HostingEnvironment

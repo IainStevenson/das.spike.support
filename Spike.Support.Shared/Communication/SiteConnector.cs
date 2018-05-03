@@ -9,6 +9,8 @@ namespace Spike.Support.Shared.Communication
 {
     public class SiteConnector : ISiteConnector
     {
+        private readonly Dictionary<string, object> _customHeaders = new Dictionary<string, object>();
+
         public Dictionary<SupportServices, Uri> Services { get; } = new Dictionary<SupportServices, Uri>
         {
             {SupportServices.Portal, new Uri("https://localhost:44394/")},
@@ -17,15 +19,10 @@ namespace Spike.Support.Shared.Communication
             {SupportServices.Payments, new Uri("https://localhost:44345/")}
         };
 
-        public SiteConnector()
-        {
-            //TODO: Configure Services
-            //TODO: implement token based security
-        }
         public async Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri)
         {
             var baseUrl = Services[serviceName];
-           
+
             return await DownloadView(baseUrl, uri);
         }
 
@@ -41,38 +38,28 @@ namespace Spike.Support.Shared.Communication
             string content = null;
             try
             {
-                var response =  client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
-                if (response.IsSuccessStatusCode)
-                {
-                    content = response.Content.ReadAsStringAsync().Result;
-                }
+                var response = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+                if (response.IsSuccessStatusCode) content = response.Content.ReadAsStringAsync().Result;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-            return content != null ?  JsonConvert.DeserializeObject<T>(content) : default(T);
+
+            return content != null ? JsonConvert.DeserializeObject<T>(content) : default(T);
         }
 
-        private Dictionary<string, object> _customHeaders = new Dictionary<string, object>() ;
         public void SetHeader(string header, object value)
         {
             if (_customHeaders.ContainsKey(header))
-            {
-                _customHeaders[header] =  value;
-            }
+                _customHeaders[header] = value;
             else
-            {
                 _customHeaders.Add(header, value);
-            }
         }
 
         public void ClearHeader(string header)
         {
-            if (_customHeaders.ContainsKey(header))
-            {
-                _customHeaders.Remove(header);
-            }
+            if (_customHeaders.ContainsKey(header)) _customHeaders.Remove(header);
         }
 
         public async Task<bool> Challenge(string uri)
@@ -81,7 +68,7 @@ namespace Spike.Support.Shared.Communication
             {
                 BaseAddress = Services[SupportServices.Portal]
             };
-            
+
             try
             {
                 var response = await client.GetAsync(uri);
@@ -95,6 +82,7 @@ namespace Spike.Support.Shared.Communication
             {
                 Console.WriteLine(e);
             }
+
             return true;
         }
 
@@ -122,9 +110,7 @@ namespace Spike.Support.Shared.Communication
         private void AddCustomHeaders(HttpClient client)
         {
             foreach (var customHeader in _customHeaders)
-            {
                 client.DefaultRequestHeaders.Add(customHeader.Key, $"{customHeader.Value}");
-            }
         }
     }
 }

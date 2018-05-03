@@ -1,17 +1,16 @@
 ﻿@using Spike.Support.Shared.Models
 @{
-    Menu menu = (ViewBag ?? new { }).Menu ?? new Menu() { NavItems = new List<NavItem>() };
+    Menu menu = (ViewBag ?? new {}).Menu ?? new Menu {NavItems = new List<NavItem>()};
     var menuItems = menu.NavItems;
 
     var activeMenuItemKey = menu.ActiveMenuItemKeys.Last();
     var activeMenuRoot = menuItems.FirstOrDefault(x => x.Key == menu.ActiveMenuRootKey);
 
-    var orientation = menu.MenuOrientation  == MenuOrientations.Vertical  ? "flex-column" : "";
-    
+    var orientation = menu.MenuOrientation == MenuOrientations.Vertical ? "flex-column" : "";
+
     // if we have nav items and we have the root item
     if (menu.NavItems.Count > 0 && activeMenuRoot != null)
     {
-        
         /* The selected (active) menu item should have submenus' to display
             as a pill based sub menu across the top of the payments*/
 
@@ -22,10 +21,10 @@
                 <li class="nav-item">
                     <a class="nav-link @isActive"
                        id="@subMenuItem.Key"
-                       href="@subMenuItem.NavigateUrl">@subMenuItem.Text</a>
+                       href="@subMenuItem.NavigateUrl">
+                        @subMenuItem.Text</a>
                 </li>
             }
         </ul>
-
     }
 }

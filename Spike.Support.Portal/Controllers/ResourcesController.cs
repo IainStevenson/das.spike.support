@@ -9,7 +9,6 @@ namespace Spike.Support.Portal.Controllers
 {
     public class ResourcesController : Controller
     {
-
         private readonly ISiteConnector _siteConnector;
 
         public ResourcesController()
@@ -26,10 +25,7 @@ namespace Spike.Support.Portal.Controllers
 
             var ok = Enum.TryParse(source, true, out SupportServices service);
 
-            if (!ok)
-            {
-                return await Task.Run(() => new MvcHtmlString(string.Empty));
-            }
+            if (!ok) return await Task.Run(() => new MvcHtmlString(string.Empty));
 
             _siteConnector.SetHeader("X-Resource", null);
             var resource = await _siteConnector.DownloadView(service, $"{path}");

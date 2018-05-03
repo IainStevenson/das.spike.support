@@ -8,7 +8,9 @@ namespace Spike.Support.Shared
 {
     public class EmbeddedResourceViewPathProvider : VirtualPathProvider
     {
-        private readonly Lazy<string[]> _resourceNames = new Lazy<string[]>(() => Assembly.GetExecutingAssembly().GetManifestResourceNames(), LazyThreadSafetyMode.ExecutionAndPublication);
+        private readonly Lazy<string[]> _resourceNames = new Lazy<string[]>(
+            () => Assembly.GetExecutingAssembly().GetManifestResourceNames(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
 
         private bool ResourceFileExists(string virtualPath)
         {
@@ -24,9 +26,7 @@ namespace Spike.Support.Shared
 
         public override VirtualFile GetFile(string virtualPath)
         {
-            return !base.FileExists(virtualPath) ?
-                new EmbeddedResourceFile(virtualPath) :
-                base.GetFile(virtualPath);
+            return !base.FileExists(virtualPath) ? new EmbeddedResourceFile(virtualPath) : base.GetFile(virtualPath);
         }
     }
 }

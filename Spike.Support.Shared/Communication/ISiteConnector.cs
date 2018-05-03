@@ -13,6 +13,5 @@ namespace Spike.Support.Shared.Communication
         void SetHeader(string header, object value);
         void ClearHeader(string header);
         Task<bool> Challenge(string uri);
-
     }
 }

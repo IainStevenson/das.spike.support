@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -15,7 +13,7 @@ namespace Spike.Support.Accounts
     {
         public static Dictionary<string, NavItem> NavItems = new Dictionary<string, NavItem>();
 
-       
+
         protected void Application_Start()
         {
             HostingEnvironment

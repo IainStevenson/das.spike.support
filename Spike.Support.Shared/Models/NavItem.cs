@@ -18,26 +18,21 @@ namespace Spike.Support.Shared.Models
             Dictionary<string, NavItem> templates, Uri baseUrl,
             Dictionary<string, string> identifiers)
         {
-            
             var templateCopies = JsonConvert.DeserializeObject<Dictionary<string, NavItem>>(
-                                 JsonConvert.SerializeObject(templates)
-                );
+                JsonConvert.SerializeObject(templates)
+            );
 
             var menuItems = templateCopies
                 .Select(i => i.Value)
                 .Map(s => true, n => n.NavItems).ToList();
 
             foreach (var menuItem in menuItems)
-            {
-                foreach (var identifier in identifiers)
-                {
-                    menuItem.NavigateUrl =
-                        new Uri(baseUrl, menuItem.NavigateUrl)
-                            .OriginalString
-                                .Replace($"{{{identifier.Key.Split('.').LastOrDefault() ?? string.Empty}}}",
-                                    identifier.Value);
-                }
-            }
+            foreach (var identifier in identifiers)
+                menuItem.NavigateUrl =
+                    new Uri(baseUrl, menuItem.NavigateUrl)
+                        .OriginalString
+                        .Replace($"{{{identifier.Key.Split('.').LastOrDefault() ?? string.Empty}}}",
+                            identifier.Value);
             //// remove navigations with untransformed variables.
             //foreach (var menuItem in menuItems.ToList())
             //{

@@ -39,28 +39,28 @@ namespace Spike.Support.Portal.Controllers
                 Ordinal = 1,
                 Text = "Payments",
                 NavigateUrl = "views/accounts/{accountId}/payments",
-                NavItems = new List<NavItem>()
+                NavItems = new List<NavItem>
                 {
-                    new NavItem()
+                    new NavItem
                     {
                         Key = "Account.Payments.All",
                         Ordinal = 0,
                         Text = "All",
-                        NavigateUrl = "views/accounts/{accountId}/payments",
+                        NavigateUrl = "views/accounts/{accountId}/payments"
                     },
-                    new NavItem()
+                    new NavItem
                     {
                         Key = "Account.Payments.In",
                         Ordinal = 1,
                         Text = "Recieved",
-                        NavigateUrl = "views/accounts/{accountId}/payments/in",
+                        NavigateUrl = "views/accounts/{accountId}/payments/in"
                     },
-                    new NavItem()
+                    new NavItem
                     {
                         Key = "Account.Payments.Out",
                         Ordinal = 2,
                         Text = "Made",
-                        NavigateUrl = "views/accounts/{accountId}/payments/out",
+                        NavigateUrl = "views/accounts/{accountId}/payments/out"
                     }
                 }
             },
@@ -83,10 +83,10 @@ namespace Spike.Support.Portal.Controllers
             // id = "This."
             // 
             var menuItems = _systemMenu
-                                .Where(x => x.Key.StartsWith($"{id ?? x.Key}", 
-                                        StringComparison.CurrentCultureIgnoreCase))
-                                .OrderBy(y => y.Ordinal)
-                                .ToDictionary(navItem => navItem.Key);
+                .Where(x => x.Key.StartsWith($"{id ?? x.Key}",
+                    StringComparison.CurrentCultureIgnoreCase))
+                .OrderBy(y => y.Ordinal)
+                .ToDictionary(navItem => navItem.Key);
             return await Task.FromResult(menuItems);
         }
     }

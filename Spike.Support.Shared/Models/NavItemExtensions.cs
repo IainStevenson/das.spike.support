@@ -18,7 +18,7 @@ namespace Spike.Support.Shared.Models
         public static IEnumerable<TSource> Map<TSource>(
             this IEnumerable<TSource> source,
             Func<TSource, bool> selectorFunction,
-            Func<TSource, IEnumerable<TSource>> getChildrenFunction) 
+            Func<TSource, IEnumerable<TSource>> getChildrenFunction)
         {
             // Add what we have to the stack
             var sourceList = source.ToList();

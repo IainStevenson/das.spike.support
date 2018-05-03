@@ -14,5 +14,4 @@ namespace Spike.Support.Users.Models
         public UserViewModel User { get; set; }
         public MvcHtmlString View { get; set; }
     }
-
 }

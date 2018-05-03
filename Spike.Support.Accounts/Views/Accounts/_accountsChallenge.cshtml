@@ -3,7 +3,7 @@
     "AccountsChallengeResponse",
     "Accounts",
     FormMethod.Post,
-    new Dictionary<string, object>() { { "action", (object)$"{Model.ResponseUrl}" } }))
+    new Dictionary<string, object> {{"action", $"{Model.ResponseUrl}"}}))
 {
     @Html.HiddenFor(m => m.AccountId)
     @Html.HiddenFor(m => m.EntityType)
@@ -16,6 +16,6 @@
         @Html.TextBoxFor(m => m.Response)
     </div>
     <div class="col-md-2">
-        <input type="submit" value="Hit It" />
+        <input type="submit" value="Hit It"/>
     </div>
 }

@@ -23,7 +23,7 @@ namespace Spike.Support.Shared.UnitTests
                 Key = "1.1",
                 Text = "1.1",
                 NavigateUrl = "controller/method/{entityId}",
-                NavItems = new List<NavItem>()
+                NavItems = new List<NavItem>
                 {
                     new NavItem
                     {
@@ -33,10 +33,10 @@ namespace Spike.Support.Shared.UnitTests
                     },
                     new NavItem
                     {
-                    Key = "1.1.2",
-                    Text = "1.1.2",
-                    NavigateUrl = "controller/method/{entityId}/items/{itemId}/body"
-                }
+                        Key = "1.1.2",
+                        Text = "1.1.2",
+                        NavigateUrl = "controller/method/{entityId}/items/{itemId}/body"
+                    }
                 }
             });
             Unit.NavItems.Add(new NavItem
@@ -51,14 +51,14 @@ namespace Spike.Support.Shared.UnitTests
         {
             base.When();
             _result = NavItem.TransformNavItems(
-                new Dictionary<string, NavItem> { { Unit.Key, Unit } },
+                new Dictionary<string, NavItem> {{Unit.Key, Unit}},
                 new Uri("http://localhost:44347/api", UriKind.RelativeOrAbsolute),
-                new Dictionary<string, string> { { "entityId", "1" }, { "itemId", "2" } }
+                new Dictionary<string, string> {{"entityId", "1"}, {"itemId", "2"}}
             );
             _badResult = NavItem.TransformNavItems(
-                new Dictionary<string, NavItem> { { Unit.Key, Unit } },
+                new Dictionary<string, NavItem> {{Unit.Key, Unit}},
                 new Uri("http://localhost:44347/api", UriKind.RelativeOrAbsolute),
-                new Dictionary<string, string> { { "entityId", "1" } }
+                new Dictionary<string, string> {{"entityId", "1"}}
             );
         }
 
@@ -68,18 +68,18 @@ namespace Spike.Support.Shared.UnitTests
             CollectionAssert.IsNotEmpty(Unit.NavItems);
         }
 
-        [Test]
-        public void ItShouldHaveTheCorrectNumberOfNavItems()
-        {
-            Assert.AreEqual(5 , (new List<NavItem>(){ Unit }).Map(x=> true, item => item.NavItems).Count());
-        }
-
 
         [Test]
         public void ItShouldContainUnTransformedNavigationUrls()
         {
             var final = JsonConvert.SerializeObject(_badResult);
             Assert.IsTrue(final.Contains("/{"));
+        }
+
+        [Test]
+        public void ItShouldHaveTheCorrectNumberOfNavItems()
+        {
+            Assert.AreEqual(5, new List<NavItem> {Unit}.Map(x => true, item => item.NavItems).Count());
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace Spike.Support.Shared.UnitTests
         [Test]
         public void ItShouldNotTransformTheOriginalItems()
         {
-            var original = JsonConvert.SerializeObject(new List<NavItem> { Unit });
+            var original = JsonConvert.SerializeObject(new List<NavItem> {Unit});
             var final = JsonConvert.SerializeObject(_result.Values);
             Assert.AreNotEqual(original, final);
         }

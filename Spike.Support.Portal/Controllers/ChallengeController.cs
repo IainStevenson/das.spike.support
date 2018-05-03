@@ -10,6 +10,7 @@ namespace Spike.Support.Portal.Controllers
     public class ChallengeController : ApiController
     {
         private readonly short _challengeTimeoutMinutes = 1;
+
         [HttpGet]
         [Route("required/{entityType}/{identifier}/{identity}")] // 
         public async Task<bool> Required(string entityType, string identifier, string identity)

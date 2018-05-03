@@ -11,7 +11,8 @@ namespace Spike.Support.Portal
 {
     public class MvcApplication : HttpApplication
     {
-        public static readonly Dictionary<Guid, SupportAgentChallenge> SupportAgentChallenges = new Dictionary<Guid, SupportAgentChallenge>();
+        public static readonly Dictionary<Guid, SupportAgentChallenge> SupportAgentChallenges =
+            new Dictionary<Guid, SupportAgentChallenge>();
 
 
         protected void Application_Start()
@@ -23,14 +24,14 @@ namespace Spike.Support.Portal
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
 
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                "DefaultApi",
+                "api/{controller}/{id}",
+                new {id = RouteParameter.Optional}
             );
 
             GlobalConfiguration.Configuration.Routes.MapHttpRoute(
-                name: "ChallengeApi",
-                routeTemplate: "api/challenge"
+                "ChallengeApi",
+                "api/challenge"
             );
 
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -39,7 +40,6 @@ namespace Spike.Support.Portal
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             GlobalConfiguration.Configuration.EnsureInitialized();
-
         }
     }
 }

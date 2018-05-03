@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Portal.Models;
 using Spike.Support.Shared;
@@ -11,7 +9,7 @@ namespace Spike.Support.Portal.Controllers
     public class ViewsController : Controller
     {
         private readonly ISiteConnector _siteConnector;
-       
+
         public ViewsController()
         {
             _siteConnector = new SiteConnector();
@@ -42,17 +40,11 @@ namespace Spike.Support.Portal.Controllers
             var indexViewModel = new IndexViewModel();
 
             if (path.ToLower().StartsWith("users".ToLower()))
-            {
                 indexViewModel.UsersView = await _siteConnector.DownloadView(SupportServices.Users, $"{path}");
-            }
             if (path.ToLower().StartsWith("accounts".ToLower()))
-            {
                 indexViewModel.AccountsView = await _siteConnector.DownloadView(SupportServices.Accounts, $"{path}");
-            }
             if (path.ToLower().StartsWith("payments".ToLower()))
-            {
                 indexViewModel.AccountsView = await _siteConnector.DownloadView(SupportServices.Payments, $"{path}");
-            }
             return View("index", indexViewModel);
         }
 
@@ -60,8 +52,7 @@ namespace Spike.Support.Portal.Controllers
         [Route("endcall/{identity?}")]
         public async Task<ActionResult> EndCall(string identity)
         {
-            
-            await _siteConnector.Challenge($"api/challenge/clear/{identity??"anonymous"}");
+            await _siteConnector.Challenge($"api/challenge/clear/{identity ?? "anonymous"}");
 
             return View("EndCall", new EndCallViewModel());
         }

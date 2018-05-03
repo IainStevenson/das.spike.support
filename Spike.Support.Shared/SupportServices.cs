@@ -6,6 +6,5 @@
         Accounts,
         Payments,
         Users
-
     }
 }

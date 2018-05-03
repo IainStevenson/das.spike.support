@@ -75,7 +75,7 @@ namespace Spike.Support.Accounts.Controllers
                     identifiers
                 ).Select(s => s.Value).ToList();
 
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> { entityType },
+                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> {entityType},
                     MenuOrientations.Vertical);
             }
 
@@ -108,7 +108,7 @@ namespace Spike.Support.Accounts.Controllers
             };
             if (!Request.Headers.AllKeys.Contains("X-Resource"))
             {
-                var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
                 var menuNavItems = NavItem.TransformNavItems(
                     MvcApplication.NavItems
                         .Where(x => x.Key.StartsWith($"{_menuType}"))
@@ -118,7 +118,7 @@ namespace Spike.Support.Accounts.Controllers
                 ).Select(s => s.Value).ToList();
 
                 ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
-                    new List<string> { $"{entityType}", $"{entityType}.In" }, MenuOrientations.Horizontal);
+                    new List<string> {$"{entityType}", $"{entityType}.In"}, MenuOrientations.Horizontal);
             }
 
             return View("_accountPayments", accountPaymentsViewModel);
@@ -150,7 +150,7 @@ namespace Spike.Support.Accounts.Controllers
             };
             if (!Request.Headers.AllKeys.Contains("X-Resource"))
             {
-                var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
                 var menuNavItems = NavItem.TransformNavItems(
                     MvcApplication.NavItems
                         .Where(x => x.Key.StartsWith($"{_menuType}"))
@@ -160,7 +160,7 @@ namespace Spike.Support.Accounts.Controllers
                 ).Select(s => s.Value).ToList();
 
                 ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
-                    new List<string> { $"{entityType}", $"{entityType}.Out" },
+                    new List<string> {$"{entityType}", $"{entityType}.Out"},
                     MenuOrientations.Horizontal);
             }
 
@@ -194,8 +194,7 @@ namespace Spike.Support.Accounts.Controllers
 
             if (!Request.Headers.AllKeys.Contains("X-Resource"))
             {
-
-                var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
                 var menuNavItems = NavItem.TransformNavItems(
                     MvcApplication.NavItems
                         .Where(x => x.Key.StartsWith($"{_menuType}"))
@@ -204,7 +203,7 @@ namespace Spike.Support.Accounts.Controllers
                     identifiers
                 ).Select(s => s.Value).ToList();
                 ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
-                    new List<string> { $"{entityType}", $"{entityType}.All" },
+                    new List<string> {$"{entityType}", $"{entityType}.All"},
                     MenuOrientations.Horizontal);
             }
 
@@ -234,7 +233,7 @@ namespace Spike.Support.Accounts.Controllers
                 var entityType = "Account.User";
 
 
-                var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
                 var menuNavItems = NavItem.TransformNavItems(
                     MvcApplication.NavItems
                         .Where(x => x.Key.StartsWith($"{_menuType}"))
@@ -244,7 +243,7 @@ namespace Spike.Support.Accounts.Controllers
                 ).Select(s => s.Value).ToList();
                 ViewBag.Menu = Menu.ConfigureMenu(menuNavItems,
                     entityType,
-                    new List<string> { entityType },
+                    new List<string> {entityType},
                     MenuOrientations.Vertical);
             }
 
@@ -266,8 +265,7 @@ namespace Spike.Support.Accounts.Controllers
             };
             if (!Request.Headers.AllKeys.Contains("X-Resource"))
             {
-
-                var identifiers = new Dictionary<string, string> { { "accountId", $"{identifier}" } };
+                var identifiers = new Dictionary<string, string> {{"accountId", $"{identifier}"}};
                 var menuNavItems = NavItem.TransformNavItems(
                     MvcApplication.NavItems
                         .Where(x => x.Key.StartsWith($"{_menuType}"))
@@ -277,7 +275,7 @@ namespace Spike.Support.Accounts.Controllers
                 ).Select(s => s.Value).ToList();
 
 
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> { entityType },
+                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> {entityType},
                     MenuOrientations.Vertical);
             }
 

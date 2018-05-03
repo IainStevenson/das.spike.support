@@ -14,19 +14,6 @@ namespace Spike.Support.Payments.Controllers
         private readonly PaymentsViewModel _paymentsViewModels;
         private readonly ISiteConnector _siteConnector;
 
-
-        protected override void OnActionExecuting(ActionExecutingContext filterContext)
-        {
-            if (!MvcApplication.NavItems.Any())
-            {
-                MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
-                    SupportServices.Portal,
-                    "api/navigation/templates") ?? new Dictionary<string, NavItem>();
-
-            }
-            base.OnActionExecuting(filterContext);
-        }
-
         public PaymentsController()
         {
             _siteConnector = new SiteConnector();
@@ -38,11 +25,20 @@ namespace Spike.Support.Payments.Controllers
                         AccountId = x % 100,
                         PaymentId = x,
                         Created = DateTimeOffset.UtcNow.AddDays(-x * 7),
-                        Direction =  (x % 3 == 0 ? "In" : "Out")   ,
-                        Amount = (x % 3 == 0 ? x * 1000 : x * -1000)
+                        Direction = x % 3 == 0 ? "In" : "Out",
+                        Amount = x % 3 == 0 ? x * 1000 : x * -1000
                     }).ToList()
             };
+        }
 
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (!MvcApplication.NavItems.Any())
+                MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
+                                              SupportServices.Portal,
+                                              "api/navigation/templates") ?? new Dictionary<string, NavItem>();
+            base.OnActionExecuting(filterContext);
         }
 
         [Route("")]
@@ -71,7 +67,8 @@ namespace Spike.Support.Payments.Controllers
             var paymentsViewModel = new PaymentsViewModel
             {
                 Payments = _paymentsViewModels.Payments
-                    .Where(x => x.AccountId == accountId && x.Direction.Equals((direction ?? x.Direction), StringComparison.InvariantCultureIgnoreCase))
+                    .Where(x => x.AccountId == accountId && x.Direction.Equals(direction ?? x.Direction,
+                                    StringComparison.InvariantCultureIgnoreCase))
                     .ToList()
             };
             return View("_accountPaymentDetails", paymentsViewModel);

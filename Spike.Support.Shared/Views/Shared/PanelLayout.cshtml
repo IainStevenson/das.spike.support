@@ -1,28 +1,29 @@
 ﻿@using Spike.Support.Shared.Models
 @{
-    Menu menu = (ViewBag ?? new {}).Menu ?? new Menu() { NavItems = new List<NavItem>()};
-    List<NavItem> menuItems = menu.NavItems;
+    Menu menu = (ViewBag ?? new {}).Menu ?? new Menu {NavItems = new List<NavItem>()};
+    var menuItems = menu.NavItems;
 }
 <div class="row">
     <div class="col-lg-12" id="panelHeader">
-        @Html.Raw((ViewBag ?? new { }).Header ?? string.Empty)
+        @Html.Raw((ViewBag ?? new {}).Header ?? string.Empty)
     </div>
 </div>
 <div class="row">
     @if (menuItems.Count > 0)
     {
-        var activeMenuItem = (menu.ActiveMenuItemKeys.FirstOrDefault() ?? string.Empty);
+        var activeMenuItem = menu.ActiveMenuItemKeys.FirstOrDefault() ?? string.Empty;
         var orientation = "flex-column";
 
         <div class="col-md-2" id="panelNavigation">
             <ul class="nav nav-pills @orientation">
                 @foreach (var menuItem in menuItems)
                 {
-                    var isActive = (activeMenuItem.ToLower() == @menuItem.Key.ToLower() ? "active" : "");
+                    var isActive = activeMenuItem.ToLower() == menuItem.Key.ToLower() ? "active" : "";
                     <li class="nav-item">
                         <a class="nav-link @isActive"
                            id="menu@menuItem.Key"
-                           href="@menuItem.NavigateUrl">@menuItem.Text</a>
+                           href="@menuItem.NavigateUrl">
+                            @menuItem.Text</a>
                     </li>
                 }
             </ul>

@@ -9,7 +9,7 @@ namespace Spike.Support.Portal
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.MapMvcAttributeRoutes();
-            
+
             routes.MapRoute(
                 "Views",
                 "{controller}/{*path}",
@@ -18,8 +18,8 @@ namespace Spike.Support.Portal
             routes.MapRoute(
                 "ResourcesApi",
                 "resources/{*path}",
-                new { controller = "Resources", action = "Index", source = string.Empty });
-           
+                new {controller = "Resources", action = "Index", source = string.Empty});
+
             routes.MapRoute(
                 "Default",
                 "{controller}/{action}/{id}",
