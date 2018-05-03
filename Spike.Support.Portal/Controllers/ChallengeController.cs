@@ -37,7 +37,17 @@ namespace Spike.Support.Portal.Controllers
             MvcApplication.SupportAgentChallenges.Add(item.Id, item);
             return await Task.FromResult(true);
         }
+        [HttpGet]
+        [Route("refresh/{entityType}/{identifier}/{identity}")]
+        public async Task<bool> Refresh(string entityType, string identifier, string identity)
+        {
+            
+            var item = MvcApplication.SupportAgentChallenges.FirstOrDefault();
+            var challenge = item.Value;
+            challenge.Until = DateTimeOffset.UtcNow.AddMinutes(_challengeTimeoutMinutes);
 
+            return await Task.FromResult(true);
+        }
         [HttpGet]
         [Route("clear/{identity}")]
         public async Task<bool> Clear(string identity)

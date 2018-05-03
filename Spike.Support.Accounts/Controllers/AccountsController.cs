@@ -90,13 +90,18 @@ namespace Spike.Support.Accounts.Controllers
             var identityName = GetIdentityOfCaller();
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
-                return RedirectToAction("AccountsChallenge", new
+             {   return RedirectToAction("AccountsChallenge", new
                 {
                     entityType,
                     identifier = id,
                     identity = identityName,
                     returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/in"
                 });
+            }
+            else
+            {
+                await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+            }
 
             var paymentsView =
                 await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/in");
@@ -132,6 +137,7 @@ namespace Spike.Support.Accounts.Controllers
 
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
+            {
                 return RedirectToAction("AccountsChallenge", new
                 {
                     entityType,
@@ -139,6 +145,11 @@ namespace Spike.Support.Accounts.Controllers
                     identity = identityName,
                     returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out"
                 });
+            }
+            else
+            {
+                await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+            }
 
             var paymentsView =
                 await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/out");
@@ -175,6 +186,7 @@ namespace Spike.Support.Accounts.Controllers
 
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
+            {
                 return RedirectToAction("AccountsChallenge", new
                 {
                     entityType,
@@ -182,6 +194,11 @@ namespace Spike.Support.Accounts.Controllers
                     identity = identityName,
                     returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments"
                 });
+            }
+            else
+            {
+                await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+            }
 
             var paymentsView =
                 await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}");
