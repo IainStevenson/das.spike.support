@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Shared.Communication
 {

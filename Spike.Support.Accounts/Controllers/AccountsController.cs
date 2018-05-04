@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
-using Spike.Support.Shared;
 using Spike.Support.Shared.Communication;
 using Spike.Support.Shared.Models;
 
@@ -26,6 +25,7 @@ namespace Spike.Support.Accounts.Controllers
         private readonly string _menuType = "Account";
 
         private readonly ISiteConnector _siteConnector;
+        private readonly int _maxChallengeTries = 3;
 
         public AccountsController()
         {
@@ -57,51 +57,54 @@ namespace Spike.Support.Accounts.Controllers
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id)
             };
 
+            if (NavItem.IsAResourceRequest(Request))
+                return View("_accountDetails", accountDetailsViewModel);
 
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
+            var entityType = "Account.Account";
+
+            var identifiers = new Dictionary<string, string>
             {
-                var entityType = "Account.Account";
+                {"accountId", $"{id}"}
+            };
 
-                var identifiers = new Dictionary<string, string>
-                {
-                    {"accountId", $"{id}"}
-                };
+            var menuNavItems = NavItem.TransformNavItems(
+                MvcApplication.NavItems
+                    .Where(x => x.Key.StartsWith($"{_menuType}"))
+                    .ToDictionary(x => x.Key, x => x.Value),
+                _siteConnector.Services[SupportServices.Portal],
+                identifiers
+            ).Select(s => s.Value).ToList();
 
-                var menuNavItems = NavItem.TransformNavItems(
-                    MvcApplication.NavItems
-                        .Where(x => x.Key.StartsWith($"{_menuType}"))
-                        .ToDictionary(x => x.Key, x => x.Value),
-                    _siteConnector.Services[SupportServices.Portal],
-                    identifiers
-                ).Select(s => s.Value).ToList();
-
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> {entityType},
-                    MenuOrientations.Vertical);
-            }
+            ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> { entityType },
+                MenuOrientations.Vertical);
 
 
             return View("_accountDetails", accountDetailsViewModel);
         }
 
         [Route("accounts/{id:int}/payments/in")]
-        public async Task<ActionResult> AccountPaymentsIn(int id)
+        public async Task<ActionResult> AccountPaymentsIn(int id, int tries = 1)
         {
             var entityType = "Account.Payments";
             var identityName = GetIdentityOfCaller();
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
-             {   return RedirectToAction("AccountsChallenge", new
-                {
-                    entityType,
-                    identifier = id,
-                    identity = identityName,
-                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/in"
-                });
-            }
-            else
             {
-                await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+                var model = new ChallengeViewModel
+                {
+                    AccountId = id,
+                    Challenge = GetChallengeForEntityType(entityType),
+                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/in",
+                    EntityType = entityType,
+                    Identity = identityName,
+                    Tries = tries,
+                    MaxTries = _maxChallengeTries
+                };
+
+                return RedirectToAction("AccountsChallenge", model);
             }
+
+            await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
 
             var paymentsView =
                 await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/in");
@@ -111,26 +114,25 @@ namespace Spike.Support.Accounts.Controllers
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
                 View = paymentsView
             };
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
-            {
-                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
-                var menuNavItems = NavItem.TransformNavItems(
-                    MvcApplication.NavItems
-                        .Where(x => x.Key.StartsWith($"{_menuType}"))
-                        .ToDictionary(x => x.Key, x => x.Value),
-                    _siteConnector.Services[SupportServices.Portal],
-                    identifiers
-                ).Select(s => s.Value).ToList();
+            if (NavItem.IsAResourceRequest(Request)) return View("_accountPayments", accountPaymentsViewModel);
 
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
-                    new List<string> {$"{entityType}", $"{entityType}.In"}, MenuOrientations.Horizontal);
-            }
+            var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+            var menuNavItems = NavItem.TransformNavItems(
+                MvcApplication.NavItems
+                    .Where(x => x.Key.StartsWith($"{_menuType}"))
+                    .ToDictionary(x => x.Key, x => x.Value),
+                _siteConnector.Services[SupportServices.Portal],
+                identifiers
+            ).Select(s => s.Value).ToList();
+
+            ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
+                new List<string> { $"{entityType}", $"{entityType}.In" }, MenuOrientations.Horizontal);
 
             return View("_accountPayments", accountPaymentsViewModel);
         }
 
         [Route("accounts/{id:int}/payments/out")]
-        public async Task<ActionResult> AccountPaymentsOut(int id)
+        public async Task<ActionResult> AccountPaymentsOut(int id, int tries = 1)
         {
             var entityType = "Account.Payments";
             var identityName = GetIdentityOfCaller();
@@ -138,18 +140,20 @@ namespace Spike.Support.Accounts.Controllers
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
             {
-                return RedirectToAction("AccountsChallenge", new
+                var model = new ChallengeViewModel
                 {
-                    entityType,
-                    identifier = id,
-                    identity = identityName,
-                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out"
-                });
+                    AccountId = id,
+                    Challenge = GetChallengeForEntityType(entityType),
+                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out",
+                    EntityType = entityType,
+                    Identity = identityName,
+                    Tries = tries,
+                    MaxTries = _maxChallengeTries
+                };
+                return RedirectToAction("AccountsChallenge", model);
             }
-            else
-            {
-                await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
-            }
+
+            await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
 
             var paymentsView =
                 await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/out");
@@ -159,27 +163,25 @@ namespace Spike.Support.Accounts.Controllers
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id),
                 View = paymentsView
             };
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
-            {
-                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
-                var menuNavItems = NavItem.TransformNavItems(
-                    MvcApplication.NavItems
-                        .Where(x => x.Key.StartsWith($"{_menuType}"))
-                        .ToDictionary(x => x.Key, x => x.Value),
-                    _siteConnector.Services[SupportServices.Portal],
-                    identifiers
-                ).Select(s => s.Value).ToList();
+            if (NavItem.IsAResourceRequest(Request)) return View("_accountPayments", accountPaymentsViewModel);
 
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
-                    new List<string> {$"{entityType}", $"{entityType}.Out"},
-                    MenuOrientations.Horizontal);
-            }
+            var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+            var menuNavItems = NavItem.TransformNavItems(
+                MvcApplication.NavItems
+                    .Where(x => x.Key.StartsWith($"{_menuType}"))
+                    .ToDictionary(x => x.Key, x => x.Value),
+                _siteConnector.Services[SupportServices.Portal],
+                identifiers
+            ).Select(s => s.Value).ToList();
 
+            ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
+                new List<string> { $"{entityType}", $"{entityType}.Out" },
+                MenuOrientations.Horizontal);
             return View("_accountPayments", accountPaymentsViewModel);
         }
 
         [Route("accounts/{id:int}/payments")]
-        public async Task<ActionResult> AccountPayments(int id)
+        public async Task<ActionResult> AccountPayments(int id, int tries = 1)
         {
             var entityType = "Account.Payments";
             var identityName = GetIdentityOfCaller();
@@ -187,18 +189,20 @@ namespace Spike.Support.Accounts.Controllers
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
             {
-                return RedirectToAction("AccountsChallenge", new
+                var model = new ChallengeViewModel
                 {
-                    entityType,
-                    identifier = id,
-                    identity = identityName,
-                    returnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments"
-                });
+                    AccountId = id,
+                    Challenge = GetChallengeForEntityType(entityType),
+                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments",
+                    EntityType = entityType,
+                    Identity = identityName,
+                    Tries = tries,
+                    MaxTries = _maxChallengeTries
+                };
+                return RedirectToAction("AccountsChallenge", model);
             }
-            else
-            {
-                await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
-            }
+
+            await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
 
             var paymentsView =
                 await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}");
@@ -209,20 +213,19 @@ namespace Spike.Support.Accounts.Controllers
                 View = paymentsView
             };
 
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
-            {
-                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
-                var menuNavItems = NavItem.TransformNavItems(
-                    MvcApplication.NavItems
-                        .Where(x => x.Key.StartsWith($"{_menuType}"))
-                        .ToDictionary(x => x.Key, x => x.Value),
-                    _siteConnector.Services[SupportServices.Portal],
-                    identifiers
-                ).Select(s => s.Value).ToList();
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
-                    new List<string> {$"{entityType}", $"{entityType}.All"},
-                    MenuOrientations.Horizontal);
-            }
+            if (NavItem.IsAResourceRequest(Request)) return View("_accountPayments", accountPaymentsViewModel);
+
+            var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+            var menuNavItems = NavItem.TransformNavItems(
+                MvcApplication.NavItems
+                    .Where(x => x.Key.StartsWith($"{_menuType}"))
+                    .ToDictionary(x => x.Key, x => x.Value),
+                _siteConnector.Services[SupportServices.Portal],
+                identifiers
+            ).Select(s => s.Value).ToList();
+            ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType,
+                new List<string> { $"{entityType}", $"{entityType}.All" },
+                MenuOrientations.Horizontal);
 
             return View("_accountPayments", accountPaymentsViewModel);
         }
@@ -232,12 +235,13 @@ namespace Spike.Support.Accounts.Controllers
             return "Anonymous"; //Request.RequestContext?.HttpContext.User?.Identity?.Name ??
         }
 
-
         [Route("accounts/{id:int}/users")]
         public async Task<ActionResult> AccountUsers(int id)
         {
             var usersView =
-                await _siteConnector.DownloadView(SupportServices.Portal, $"resources/users/{id}/accounts/");
+                await _siteConnector.DownloadView(
+                    SupportServices.Portal,
+                    $"resources/users/{id}/accounts/");
 
             var accountUsersViewModel = new AccountUsersViewModel
             {
@@ -245,84 +249,141 @@ namespace Spike.Support.Accounts.Controllers
                 View = usersView
             };
 
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
-            {
-                var entityType = "Account.User";
+            if (NavItem.IsAResourceRequest(Request)) return View("_accountUsers", accountUsersViewModel);
+
+            var entityType = "Account.User";
 
 
-                var identifiers = new Dictionary<string, string> {{"accountId", $"{id}"}};
-                var menuNavItems = NavItem.TransformNavItems(
-                    MvcApplication.NavItems
-                        .Where(x => x.Key.StartsWith($"{_menuType}"))
-                        .ToDictionary(x => x.Key, x => x.Value),
-                    _siteConnector.Services[SupportServices.Portal],
-                    identifiers
-                ).Select(s => s.Value).ToList();
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems,
-                    entityType,
-                    new List<string> {entityType},
-                    MenuOrientations.Vertical);
-            }
+            var identifiers = new Dictionary<string, string> { { "accountId", $"{id}" } };
+            var menuNavItems = NavItem.TransformNavItems(
+                MvcApplication.NavItems
+                    .Where(x => x.Key.StartsWith($"{_menuType}"))
+                    .ToDictionary(x => x.Key, x => x.Value),
+                _siteConnector.Services[SupportServices.Portal],
+                identifiers
+            ).Select(s => s.Value).ToList();
+            ViewBag.Menu = Menu.ConfigureMenu(menuNavItems,
+                entityType,
+                new List<string> { entityType },
+                MenuOrientations.Vertical);
 
             return View("_accountUsers", accountUsersViewModel);
         }
 
-
-        public ActionResult AccountsChallenge(string entityType, string identity, int identifier, string returnTo)
+        [Route("accounts/challenge/{entityType}/{identitifier}/{identity}/{returnTo}/{tries?}/{message?}")]
+        public ActionResult AccountsChallenge(string entityType, string identity, int identifier, string returnTo, int tries, string message)
         {
-            var model = new AccountsChallengeViewModel
+            var formPostbackUrl = new Uri(_siteConnector.Services[SupportServices.Accounts],
+                "accounts/challenge/response").AbsoluteUri;
+
+            ChallengeViewModel model = new ChallengeViewModel
             {
-                AccountId = identifier,
-                Challenge = "Challenge",
-                Response = null,
-                ReturnTo = returnTo,
                 EntityType = entityType,
+                AccountId = identifier,
                 Identity = identity,
-                ResponseUrl = $"{_siteConnector.Services[SupportServices.Accounts]}accounts/challenge/response"
+                ReturnTo = returnTo,
+                Tries = tries,
+                MaxTries = _maxChallengeTries,
+                ResponseUrl = formPostbackUrl,
+                Message = message
+
             };
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
-            {
-                var identifiers = new Dictionary<string, string> {{"accountId", $"{identifier}"}};
-                var menuNavItems = NavItem.TransformNavItems(
-                    MvcApplication.NavItems
-                        .Where(x => x.Key.StartsWith($"{_menuType}"))
-                        .ToDictionary(x => x.Key, x => x.Value),
+
+            if (NavItem.IsAResourceRequest(Request))
+                return View("_accountsChallenge", model);
+
+            var identifiers = new Dictionary<string, string> { { "accountId", $"{model.AccountId}" } };
+
+            var navItems = MvcApplication.NavItems
+                .Where(x => x.Key.StartsWith($"{_menuType}"))
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            var menuNavItems = NavItem.TransformNavItems(
+                    navItems,
                     _siteConnector.Services[SupportServices.Portal],
                     identifiers
-                ).Select(s => s.Value).ToList();
+                ).Select(s => s.Value)
+                .ToList();
 
 
-                ViewBag.Menu = Menu.ConfigureMenu(menuNavItems, entityType, new List<string> {entityType},
-                    MenuOrientations.Vertical);
-            }
+            ViewBag.Menu = Menu.ConfigureMenu(
+                menuNavItems,
+                model.EntityType,
+                new List<string> { model.EntityType },
+                MenuOrientations.Vertical);
 
             return View("_accountsChallenge", model);
         }
 
+        private string GetChallengeForEntityType(string entityType)
+        {
+            return $"Challenge for {entityType} ";
+        }
+
+        /// <summary>
+        /// Processes the response, if its nothing or wrong the tries is incremented and passed back
+        /// If Tries > MaxTries then the challenge is abanondeoned and passed back to the portals Challenge failed route.
+        /// </summary>
+        /// <param name="formProperties"></param>
+        /// <returns></returns>
         [Route("accounts/challenge/response")]
         [HttpPost]
         public async Task<ActionResult> AccountsChallengeResponse(FormCollection formProperties)
         {
-            var response = (formProperties ?? new FormCollection())["Response"] ?? string.Empty;
+            if (formProperties == null) throw new ArgumentNullException(nameof(formProperties));
 
-            if (!string.IsNullOrWhiteSpace(response))
+            var response = FormResponse(formProperties);
+
+            var tries = int.Parse(formProperties["Tries"] ?? "1");
+
+            var model = new ChallengeViewModel()
             {
-                var id = (formProperties ?? new FormCollection())["AccountId"] ?? string.Empty;
-                var entityType = (formProperties ?? new FormCollection())["EntityType"] ?? string.Empty;
-                var identity = (formProperties ?? new FormCollection())["Identity"] ?? string.Empty;
-                if (int.TryParse(id, out var accountId))
+                EntityType = formProperties["EntityType"] ?? string.Empty,
+                Identity = formProperties["Identity"] ?? string.Empty,
+                AccountId = int.Parse(formProperties["AccountId"] ?? "-1"),
+                ReturnTo = formProperties["ReturnTo"],
+                Tries = ++tries,
+                MaxTries = _maxChallengeTries,
+                Message = $"You did not provide a response"
+            };
+
+            if (string.IsNullOrWhiteSpace(response) || ResponseIsNotAcceptable(response))
+            {
+                
+                if (model.Tries > model.MaxTries)
                 {
-                    // TODO: Verify response is valid for id
-
-                    await _siteConnector.Challenge(
-                        $"api/challenge/passed/{entityType}/{accountId}/{identity}");
-
-                    var returnTo = (formProperties ?? new FormCollection())["ReturnTo"] ?? string.Empty;
-                    return Redirect(returnTo);
+                   
+                    return Redirect(new Uri(_siteConnector.Services[SupportServices.Portal], 
+                            $"views/challenge/failed").AbsoluteUri);
                 }
+                model.Message = $"Please try again";
+                return ReturnToChallenge(model);
             }
 
-            return Redirect("accounts/denied");
+            await _siteConnector.Challenge(
+                    $"api/challenge/passed/{model.EntityType}/{model.AccountId}/{model.Identity}");
+
+            return Redirect(model.ReturnTo);
+        }
+
+        private ActionResult ReturnToChallenge(ChallengeViewModel model)
+        {
+            return Redirect(new Uri(
+                    _siteConnector.Services[SupportServices.Portal],
+                    $"views/accounts/challenge/{model.EntityType}/{model.AccountId}/{model.Identity}/{model.ReturnTo}/{model.Tries}/{model.Message}")
+                .AbsoluteUri
+            );
+        }
+
+        private bool ResponseIsNotAcceptable(string response)
+        {
+            return response.StartsWith("f", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private static string FormResponse(FormCollection formProperties)
+        {
+            return (formProperties ?? new FormCollection())["Response"] ?? string.Empty;
         }
     }
+
 }

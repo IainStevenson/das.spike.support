@@ -1,4 +1,4 @@
-﻿namespace Spike.Support.Shared
+﻿namespace Spike.Support.Shared.Models
 {
     public enum SupportServices
     {

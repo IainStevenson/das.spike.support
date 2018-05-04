@@ -1,21 +1,34 @@
-﻿@model Spike.Support.Accounts.Models.AccountsChallengeViewModel
+﻿@model Spike.Support.Accounts.Models.ChallengeViewModel
 @using (Html.BeginForm(
     "AccountsChallengeResponse",
     "Accounts",
     FormMethod.Post,
-    new Dictionary<string, object> {{"action", $"{Model.ResponseUrl}"}}))
+    new Dictionary<string, object> { { "action", $"{Model.ResponseUrl}" } }))
 {
     @Html.HiddenFor(m => m.AccountId)
     @Html.HiddenFor(m => m.EntityType)
     @Html.HiddenFor(m => m.Identity)
     @Html.HiddenFor(m => m.ReturnTo)
-    <div class="col-md-2">
+    @Html.HiddenFor(m => m.Tries)
+    @Html.HiddenFor(m => m.MaxTries)
+    <div class="col-md-3">
         @Html.LabelFor(m => m.Challenge)
     </div>
-    <div class="col-md-8">
+    <div class="col-md-2">
+        This is try @Model.Tries of @Model.MaxTries
+    </div>
+    <div class="col-md-5">
         @Html.TextBoxFor(m => m.Response)
     </div>
     <div class="col-md-2">
-        <input type="submit" value="Hit It"/>
+        <input class="pull-left" type="submit" value="Hit It" />
     </div>
+    if (Model.Message != null)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                @Html.LabelFor(m => m.Message)
+            </div>
+        </div>
+    }
 }

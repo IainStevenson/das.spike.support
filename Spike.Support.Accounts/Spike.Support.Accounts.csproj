@@ -150,7 +150,7 @@
     <Compile Include="Models\AccountDetailViewModel.cs" />
     <Compile Include="Models\AccountsViewModel.cs" />
     <Compile Include="Models\AccountViewModel.cs" />
-    <Compile Include="Models\PaymentChallengeViewModel.cs" />
+    <Compile Include="Models\ChallengeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Newtonsoft.Json;
 
 namespace Spike.Support.Shared.Models
@@ -13,6 +14,11 @@ namespace Spike.Support.Shared.Models
         public int Ordinal { get; set; }
         public string[] Roles { get; set; } = { };
         public List<NavItem> NavItems { get; set; } = new List<NavItem>();
+
+        public static bool IsAResourceRequest(HttpRequestBase request)
+        {
+            return request.Headers.AllKeys.Contains("X-Resource");
+        }
 
         public static Dictionary<string, NavItem> TransformNavItems(
             Dictionary<string, NavItem> templates, Uri baseUrl,

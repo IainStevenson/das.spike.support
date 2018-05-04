@@ -9,5 +9,6 @@ namespace Spike.Support.Portal.Models
         public string Identifier { get; set; }
         public string Identity { get; set; }
         public DateTimeOffset Until { get; set; }
+        public int Tries { get; set; }
     }
 }

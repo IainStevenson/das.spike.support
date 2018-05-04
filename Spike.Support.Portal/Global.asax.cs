@@ -14,6 +14,7 @@ namespace Spike.Support.Portal
         public static readonly Dictionary<Guid, SupportAgentChallenge> SupportAgentChallenges =
             new Dictionary<Guid, SupportAgentChallenge>();
 
+       
 
         protected void Application_Start()
         {

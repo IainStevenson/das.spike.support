@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Shared;
 using Spike.Support.Shared.Communication;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
@@ -28,7 +29,9 @@ namespace Spike.Support.Portal.Controllers
             if (!ok) return await Task.Run(() => new MvcHtmlString(string.Empty));
 
             _siteConnector.SetHeader("X-Resource", null);
+
             var resource = await _siteConnector.DownloadView(service, $"{path}");
+
             _siteConnector.ClearHeader("X-Resource");
 
             return resource;

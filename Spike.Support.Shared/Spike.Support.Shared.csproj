@@ -72,11 +72,12 @@
     <Compile Include="EmbeddedResourceViewPathProvider.cs" />
     <Compile Include="Communication\ISiteConnector.cs" />
     <Compile Include="Models\Menu.cs" />
+    <Compile Include="Models\MenuOrientations.cs" />
     <Compile Include="Models\NavItem.cs" />
     <Compile Include="Models\NavItemExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communication\SiteConnector.cs" />
-    <Compile Include="SupportServices.cs" />
+    <Compile Include="Models\SupportServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

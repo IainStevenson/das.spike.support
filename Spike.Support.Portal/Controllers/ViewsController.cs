@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Spike.Support.Portal.Models;
 using Spike.Support.Shared;
 using Spike.Support.Shared.Communication;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
@@ -39,6 +43,10 @@ namespace Spike.Support.Portal.Controllers
 
             var indexViewModel = new IndexViewModel();
 
+            if (path.Equals("challenge/failed", StringComparison.InvariantCultureIgnoreCase))
+               return  RedirectToAction("ChallengeFailed", "Views");
+
+
             if (path.ToLower().StartsWith("users".ToLower()))
                 indexViewModel.UsersView = await _siteConnector.DownloadView(SupportServices.Users, $"{path}");
             if (path.ToLower().StartsWith("accounts".ToLower()))
@@ -56,5 +64,12 @@ namespace Spike.Support.Portal.Controllers
 
             return View("EndCall", new EndCallViewModel());
         }
+
+        public async Task<ActionResult> ChallengeFailed()
+        {
+            
+            return View("ChallengeFailed");
+        }
     }
+
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Shared.Communication
 {

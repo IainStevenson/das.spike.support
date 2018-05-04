@@ -1,0 +1,29 @@
+﻿@model Spike.Support.Portal.Models.ChallengeDeniedViewModel
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Access Denied</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div>Access has been denied, to that information.</div>
+    </div>
+</div>
+@if (Model?.Reason != null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div>@Model.Reason</div>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-5">
+    </div>
+    <div class="col-md-2">
+        <a class="button" href="/">Start a new call</a>
+    </div>
+    <div class="col-md-5">
+    </div>
+</div>

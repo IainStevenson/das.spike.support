@@ -48,7 +48,7 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}")]
         public ActionResult User(int id)
         {
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
+            if (!NavItem.IsAResourceRequest(Request))
             {
                 var menuSelector = "User";
                 var identifiers = new Dictionary<string, string> {{"userId", $"{id}"}};
@@ -77,7 +77,7 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}/accounts")]
         public ActionResult UserAccounts(int id)
         {
-            if (!Request.Headers.AllKeys.Contains("X-Resource"))
+            if (!NavItem.IsAResourceRequest(Request))
             {
                 var menuSelector = "User";
                 var identifiers = new Dictionary<string, string> {{"userId", $"{id}"}};

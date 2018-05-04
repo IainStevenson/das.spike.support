@@ -152,7 +152,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ChallengeController.cs" />
+    <Compile Include="Controllers\ChallengesController.cs" />
     <Compile Include="Controllers\NavigationController.cs" />
+    <Compile Include="Models\ChallengeDeniedViewModel.cs" />
     <Compile Include="Models\SupportAgentChallenge.cs" />
     <Compile Include="Models\EndCallViewModel.cs" />
     <Compile Include="Controllers\ViewsController.cs" />
@@ -200,6 +202,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Views\Index.cshtml" />
     <Content Include="Views\Views\EndCall.cshtml" />
+    <Content Include="Views\Challenges\Denied.cshtml" />
+    <Content Include="Views\Views\ChallengeFailed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
