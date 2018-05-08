@@ -8,7 +8,7 @@ using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
-    public class ResourcesController : Controller
+    public class ResourcesController : BaseController
     {
         private readonly ISiteConnector _siteConnector;
 

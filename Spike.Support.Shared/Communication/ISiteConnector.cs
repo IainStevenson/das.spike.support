@@ -8,6 +8,9 @@ namespace Spike.Support.Shared.Communication
 {
     public interface ISiteConnector
     {
+
+        void SetCookie(string name, string value);
+
         Dictionary<SupportServices, Uri> Services { get; }
         Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri);
         T GetMenuTemplates<T>(SupportServices service, string uri);

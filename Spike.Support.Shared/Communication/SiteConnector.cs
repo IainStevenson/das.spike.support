@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -11,6 +12,14 @@ namespace Spike.Support.Shared.Communication
     public class SiteConnector : ISiteConnector
     {
         private readonly Dictionary<string, object> _customHeaders = new Dictionary<string, object>();
+        private string _cookieName = "IdentityContextCookie";
+        private string _cookeValue = "not-anonymous";
+
+        public void SetCookie(string name, string value)
+        {
+            _cookieName = name;
+            _cookeValue = value;
+        }
 
         public Dictionary<SupportServices, Uri> Services { get; } = new Dictionary<SupportServices, Uri>
         {
@@ -29,16 +38,19 @@ namespace Spike.Support.Shared.Communication
 
         public T GetMenuTemplates<T>(SupportServices serviceName, string uri)
         {
-            var baseUrl = Services[serviceName];
-            var client = new HttpClient
-            {
-                BaseAddress = baseUrl
-            };
+            
+            var baseAddress = Services[serviceName];
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+            var client = new HttpClient(handler) { BaseAddress = baseAddress };
+            cookieContainer.Add(baseAddress, new Cookie(_cookieName, _cookeValue));
+
             AddCustomHeaders(client);
 
             string content = null;
             try
             {
+
                 var response = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
                 if (response.IsSuccessStatusCode) content = response.Content.ReadAsStringAsync().Result;
             }
@@ -65,10 +77,13 @@ namespace Spike.Support.Shared.Communication
 
         public async Task<bool> Challenge(string uri)
         {
-            var client = new HttpClient
-            {
-                BaseAddress = Services[SupportServices.Portal]
-            };
+            var baseAddress = Services[SupportServices.Portal];
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+            var client = new HttpClient(handler) { BaseAddress = baseAddress };
+            cookieContainer.Add(baseAddress, new Cookie(_cookieName, _cookeValue));
+
+            
 
             try
             {
@@ -89,10 +104,11 @@ namespace Spike.Support.Shared.Communication
 
         private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
         {
-            var client = new HttpClient
-            {
-                BaseAddress = resourceAddress
-            };
+            var baseAddress = resourceAddress;
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+            var client = new HttpClient(handler) { BaseAddress = baseAddress };
+            cookieContainer.Add(baseAddress, new Cookie(_cookieName, _cookeValue));
 
             AddCustomHeaders(client);
             string content = null;

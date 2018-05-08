@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
+using Microsoft.ApplicationInsights.DataContracts;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared.Communication;
 using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Accounts.Controllers
 {
+
+
     public class AccountsController : Controller
     {
         private readonly AccountsViewModel _accountViewModels = new AccountsViewModel
@@ -31,8 +35,13 @@ namespace Spike.Support.Accounts.Controllers
             _siteConnector = new SiteConnector();
         }
 
+        private string _identity = "anonymous";
+        private static string _identityContextCookieName = "IdentityContextCookie";
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            _identity = (Request.Cookies[_identityContextCookieName]?? new HttpCookie(_identityContextCookieName)).Value?? _identity;
+
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
                                               SupportServices.Portal,
@@ -231,7 +240,7 @@ namespace Spike.Support.Accounts.Controllers
 
         private string GetIdentityOfCaller()
         {
-            return "Anonymous"; //Request.RequestContext?.HttpContext.User?.Identity?.Name ??
+            return _identity;
         }
 
         [Route("accounts/{id:int}/users")]

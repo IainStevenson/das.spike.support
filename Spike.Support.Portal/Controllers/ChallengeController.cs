@@ -6,13 +6,13 @@ using Spike.Support.Portal.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
-    [RoutePrefix("api/challenge")]
+    //[RoutePrefix("api/challenge")]
     public class ChallengeController : ApiController
     {
         private readonly short _challengeTimeoutMinutes = 1;
 
         [HttpGet]
-        [Route("required/{entityType}/{identifier}/{identity}")] // 
+        [Route("api/challenge/required/{entityType}/{identifier}/{identity}")] // 
         public async Task<bool> Required(string entityType, string identifier, string identity)
         {
             var item = MvcApplication.SupportAgentChallenges.Values.FirstOrDefault(x =>
@@ -24,7 +24,7 @@ namespace Spike.Support.Portal.Controllers
         }
         
         [HttpGet]
-        [Route("passed/{entityType}/{identifier}/{identity}")]
+        [Route("api/challenge/passed/{entityType}/{identifier}/{identity}")]
         public async Task<bool> Passed(string entityType, string identifier, string identity)
         {
             var item = new SupportAgentChallenge
@@ -38,7 +38,7 @@ namespace Spike.Support.Portal.Controllers
             return await Task.FromResult(true);
         }
         [HttpGet]
-        [Route("refresh/{entityType}/{identifier}/{identity}")]
+        [Route("api/challenge/refresh/{entityType}/{identifier}/{identity}")]
         public async Task<bool> Refresh(string entityType, string identifier, string identity)
         {
 
@@ -50,7 +50,7 @@ namespace Spike.Support.Portal.Controllers
             return await Task.FromResult(true);
         }
         [HttpGet]
-        [Route("clear/{identity}")]
+        [Route("api/challenge/clear/{identity}")]
         public async Task<bool> Clear(string identity)
         {
             var itemList = MvcApplication.SupportAgentChallenges.Where(

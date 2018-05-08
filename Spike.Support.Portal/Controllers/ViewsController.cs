@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -10,7 +10,7 @@ using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Portal.Controllers
 {
-    public class ViewsController : Controller
+    public class ViewsController : BaseController
     {
         private readonly ISiteConnector _siteConnector;
 
@@ -40,7 +40,7 @@ namespace Spike.Support.Portal.Controllers
         public async Task<ActionResult> Index(string path)
         {
             if (string.IsNullOrWhiteSpace(path)) return new HttpNotFoundResult();
-
+            _siteConnector.SetCookie(_identityContextCookieName, "test.user@test.domain.com");
             var indexViewModel = new IndexViewModel();
 
             if (path.ToLower().StartsWith("users".ToLower()))
