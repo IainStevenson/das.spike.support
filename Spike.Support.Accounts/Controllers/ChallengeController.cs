@@ -97,7 +97,9 @@ namespace Spike.Support.Accounts.Controllers
                 model.Tries += 1;
                 if (model.Tries > model.MaxTries)
                 {
-                    return RedirectToAction("Failed", "Challenge");
+                    var failedUri = $"views/accounts/challenge/failed/{model.ChallengeId}";
+                    var uri = new Uri(_siteConnector.Services[SupportServices.Portal], failedUri).AbsoluteUri;
+                    return Redirect(uri);
                 }
                 model.Message = $"Please try again";
                 return ReturnToChallenge(model);
@@ -117,9 +119,35 @@ namespace Spike.Support.Accounts.Controllers
             return Redirect(redirectUri.AbsoluteUri);
         }
 
-        public ActionResult Failed()
+        [Route("accounts/challenge/failed/{challengeId:guid}")]
+        public ActionResult Failed(Guid challengeId)
         {
-            return View();
+            if (!MvcApplication.Challenges.ContainsKey(challengeId))
+                return PartialView("Failed", null);
+
+            var model = MvcApplication.Challenges[challengeId];
+
+            var identifiers = new Dictionary<string, string> { { "accountId", $"{model.Identifier}" } };
+
+            var navItems = MvcApplication.NavItems
+                .Where(x => x.Key.StartsWith($"{model.MenuType}"))
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            var menuNavItems = NavItem.TransformNavItems(
+                    navItems,
+                    _siteConnector.Services[SupportServices.Portal],
+                    identifiers
+                ).Select(s => s.Value)
+                .ToList();
+
+
+            ViewBag.Menu = Menu.ConfigureMenu(
+                menuNavItems,
+                model.EntityType,
+                new List<string> { model.EntityType
+                },
+                MenuOrientations.Vertical);
+            return View(model);
         }
     }
 }
