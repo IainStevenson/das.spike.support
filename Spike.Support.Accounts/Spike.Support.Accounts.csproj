@@ -144,6 +144,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
+    <Compile Include="Controllers\ChallengeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -192,8 +193,9 @@
     <Content Include="Views\Accounts\_accountDetails.cshtml" />
     <Content Include="Views\Accounts\_accountPayments.cshtml" />
     <Content Include="Views\Accounts\_accountUsers.cshtml" />
-    <Content Include="Views\Accounts\_accountsChallenge.cshtml" />
+    <Content Include="Views\Challenge\Challenge.cshtml" />
     <Content Include="Views\Accounts\_accountDetail.cshtml" />
+    <Content Include="Views\Challenge\Failed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

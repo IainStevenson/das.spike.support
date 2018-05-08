@@ -22,18 +22,7 @@ namespace Spike.Support.Portal.Controllers
                 && x.Until > DateTimeOffset.UtcNow);
             return await Task.FromResult(item == null);
         }
-
-        //[HttpGet]
-        //[Route("failed/{entityType}/{identifier}/{identity}")]
-        //public async Task<bool> Failed(string entityType, string identifier, string identity)
-        //{
-        //    var item = MvcApplication.SupportAgentChallenges.FirstOrDefault(x=>x.Value.EntityType == entityType && x.Value.Identifier == identifier && x.Value.Identity == identity);
-        //    if (item.Value == null) return await Task.FromResult(true);
-        //    var challenge = item.Value;
-        //    challenge.Tries = challenge.Tries + 1;
-        //    return await Task.FromResult(true);
-        //}
-
+        
         [HttpGet]
         [Route("passed/{entityType}/{identifier}/{identity}")]
         public async Task<bool> Passed(string entityType, string identifier, string identity)

@@ -25,8 +25,7 @@ namespace Spike.Support.Accounts.Controllers
         private readonly string _menuType = "Account";
 
         private readonly ISiteConnector _siteConnector;
-        private readonly int _maxChallengeTries = 3;
-
+    
         public AccountsController()
         {
             _siteConnector = new SiteConnector();
@@ -87,21 +86,21 @@ namespace Spike.Support.Accounts.Controllers
         {
             var entityType = "Account.Payments";
             var identityName = GetIdentityOfCaller();
+
             if (await _siteConnector.Challenge(
                 $"api/challenge/required/{entityType}/{id}/{identityName}"))
             {
                 var model = new ChallengeViewModel
                 {
-                    AccountId = id,
-                    Challenge = GetChallengeForEntityType(entityType),
-                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/in",
+                    MenuType = _menuType,
                     EntityType = entityType,
+                    Identifier = $"{id}",
                     Identity = identityName,
+                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/int",
                     Tries = tries,
-                    MaxTries = _maxChallengeTries
                 };
-
-                return RedirectToAction("AccountsChallenge", model);
+                MvcApplication.Challenges.Add(model.ChallengeId, model);
+                return RedirectToAction("Challenge", "Challenge", new { model.ChallengeId });
             }
 
             await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
@@ -142,15 +141,15 @@ namespace Spike.Support.Accounts.Controllers
             {
                 var model = new ChallengeViewModel
                 {
-                    AccountId = id,
-                    Challenge = GetChallengeForEntityType(entityType),
-                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out",
+                    MenuType = _menuType,
                     EntityType = entityType,
+                    Identifier = $"{id}",
                     Identity = identityName,
+                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out",
                     Tries = tries,
-                    MaxTries = _maxChallengeTries
                 };
-                return RedirectToAction("AccountsChallenge", model);
+                MvcApplication.Challenges.Add(model.ChallengeId, model);
+                return RedirectToAction("Challenge", "Challenge", new { model.ChallengeId });
             }
 
             await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
@@ -191,15 +190,15 @@ namespace Spike.Support.Accounts.Controllers
             {
                 var model = new ChallengeViewModel
                 {
-                    AccountId = id,
-                    Challenge = GetChallengeForEntityType(entityType),
-                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments",
+                    MenuType = _menuType,
                     EntityType = entityType,
+                    Identifier = $"{id}",
                     Identity = identityName,
-                    Tries = tries,
-                    MaxTries = _maxChallengeTries
+                    ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments",
+                    Tries = tries
                 };
-                return RedirectToAction("AccountsChallenge", model);
+                MvcApplication.Challenges.Add(model.ChallengeId, model);
+                return RedirectToAction("Challenge", "Challenge", new { model.ChallengeId });
             }
 
             await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
@@ -269,121 +268,5 @@ namespace Spike.Support.Accounts.Controllers
 
             return View("_accountUsers", accountUsersViewModel);
         }
-
-        [Route("accounts/challenge/{entityType}/{identitifier}/{identity}/{returnTo}/{tries?}/{message?}")]
-        public ActionResult AccountsChallenge(string entityType, string identity, int identifier, string returnTo, int tries, string message)
-        {
-            var formPostbackUrl = new Uri(_siteConnector.Services[SupportServices.Accounts],
-                "accounts/challenge/response").AbsoluteUri;
-
-            ChallengeViewModel model = new ChallengeViewModel
-            {
-                EntityType = entityType,
-                AccountId = identifier,
-                Identity = identity,
-                ReturnTo = returnTo,
-                Tries = tries,
-                MaxTries = _maxChallengeTries,
-                ResponseUrl = formPostbackUrl,
-                Message = message
-
-            };
-
-            if (NavItem.IsAResourceRequest(Request))
-                return View("_accountsChallenge", model);
-
-            var identifiers = new Dictionary<string, string> { { "accountId", $"{model.AccountId}" } };
-
-            var navItems = MvcApplication.NavItems
-                .Where(x => x.Key.StartsWith($"{_menuType}"))
-                .ToDictionary(x => x.Key, x => x.Value);
-
-            var menuNavItems = NavItem.TransformNavItems(
-                    navItems,
-                    _siteConnector.Services[SupportServices.Portal],
-                    identifiers
-                ).Select(s => s.Value)
-                .ToList();
-
-
-            ViewBag.Menu = Menu.ConfigureMenu(
-                menuNavItems,
-                model.EntityType,
-                new List<string> { model.EntityType },
-                MenuOrientations.Vertical);
-
-            return View("_accountsChallenge", model);
-        }
-
-        private string GetChallengeForEntityType(string entityType)
-        {
-            return $"Challenge for {entityType} ";
-        }
-
-        /// <summary>
-        /// Processes the response, if its nothing or wrong the tries is incremented and passed back
-        /// If Tries > MaxTries then the challenge is abanondeoned and passed back to the portals Challenge failed route.
-        /// </summary>
-        /// <param name="formProperties"></param>
-        /// <returns></returns>
-        [Route("accounts/challenge/response")]
-        [HttpPost]
-        public async Task<ActionResult> AccountsChallengeResponse(FormCollection formProperties)
-        {
-            if (formProperties == null) throw new ArgumentNullException(nameof(formProperties));
-
-            var response = FormResponse(formProperties);
-
-            var tries = int.Parse(formProperties["Tries"] ?? "1");
-
-            var model = new ChallengeViewModel()
-            {
-                EntityType = formProperties["EntityType"] ?? string.Empty,
-                Identity = formProperties["Identity"] ?? string.Empty,
-                AccountId = int.Parse(formProperties["AccountId"] ?? "-1"),
-                ReturnTo = formProperties["ReturnTo"],
-                Tries = ++tries,
-                MaxTries = _maxChallengeTries,
-                Message = $"You did not provide a response"
-            };
-
-            if (string.IsNullOrWhiteSpace(response) || ResponseIsNotAcceptable(response))
-            {
-                
-                if (model.Tries > model.MaxTries)
-                {
-                   
-                    return Redirect(new Uri(_siteConnector.Services[SupportServices.Portal], 
-                            $"views/challenge/failed").AbsoluteUri);
-                }
-                model.Message = $"Please try again";
-                return ReturnToChallenge(model);
-            }
-
-            await _siteConnector.Challenge(
-                    $"api/challenge/passed/{model.EntityType}/{model.AccountId}/{model.Identity}");
-
-            return Redirect(model.ReturnTo);
-        }
-
-        private ActionResult ReturnToChallenge(ChallengeViewModel model)
-        {
-            return Redirect(new Uri(
-                    _siteConnector.Services[SupportServices.Portal],
-                    $"views/accounts/challenge/{model.EntityType}/{model.AccountId}/{model.Identity}/{model.ReturnTo}/{model.Tries}/{model.Message}")
-                .AbsoluteUri
-            );
-        }
-
-        private bool ResponseIsNotAcceptable(string response)
-        {
-            return response.StartsWith("f", StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private static string FormResponse(FormCollection formProperties)
-        {
-            return (formProperties ?? new FormCollection())["Response"] ?? string.Empty;
-        }
     }
-
 }

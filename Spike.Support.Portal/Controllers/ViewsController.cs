@@ -43,10 +43,6 @@ namespace Spike.Support.Portal.Controllers
 
             var indexViewModel = new IndexViewModel();
 
-            if (path.Equals("challenge/failed", StringComparison.InvariantCultureIgnoreCase))
-               return  RedirectToAction("ChallengeFailed", "Views");
-
-
             if (path.ToLower().StartsWith("users".ToLower()))
                 indexViewModel.UsersView = await _siteConnector.DownloadView(SupportServices.Users, $"{path}");
             if (path.ToLower().StartsWith("accounts".ToLower()))

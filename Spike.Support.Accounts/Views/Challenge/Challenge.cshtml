@@ -1,16 +1,13 @@
 ﻿@model Spike.Support.Accounts.Models.ChallengeViewModel
 @using (Html.BeginForm(
-    "AccountsChallengeResponse",
-    "Accounts",
+    "Challenge",
+    "Challenge",
     FormMethod.Post,
     new Dictionary<string, object> { { "action", $"{Model.ResponseUrl}" } }))
 {
-    @Html.HiddenFor(m => m.AccountId)
-    @Html.HiddenFor(m => m.EntityType)
-    @Html.HiddenFor(m => m.Identity)
-    @Html.HiddenFor(m => m.ReturnTo)
-    @Html.HiddenFor(m => m.Tries)
-    @Html.HiddenFor(m => m.MaxTries)
+    
+    @*@Html.AntiForgeryToken()*@
+    @Html.HiddenFor(m => m.ChallengeId)
     <div class="col-md-3">
         @Html.LabelFor(m => m.Challenge)
     </div>
