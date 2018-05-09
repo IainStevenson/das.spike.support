@@ -50,7 +50,8 @@ namespace Spike.Support.Accounts.Controllers
             var formPostbackUrl = new Uri(_siteConnector.Services[SupportServices.Accounts],
                 "accounts/challenge/response").AbsoluteUri;
 
-            if (!MvcApplication.Challenges.ContainsKey(challengeId))
+            if (!MvcApplication.Challenges.ContainsKey(challengeId) ||
+                MvcApplication.Challenges[challengeId].Identity != _identity)
                 return RedirectToAction("Failed", "Challenge");
 
             var model = MvcApplication.Challenges[challengeId];
@@ -107,8 +108,8 @@ namespace Spike.Support.Accounts.Controllers
             if (formProperties == null) throw new ArgumentNullException(nameof(formProperties));
 
             var challengeId = new Guid(formProperties["ChallengeId"] ?? Guid.Empty.ToString());
-
-            if (!MvcApplication.Challenges.ContainsKey(challengeId))
+            
+            if (!MvcApplication.Challenges.ContainsKey(challengeId) )
                 return RedirectToAction("Failed", "Challenge");
 
             var model = MvcApplication.Challenges[challengeId];
