@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -77,6 +78,7 @@ namespace Spike.Support.Portal.Controllers
         [HttpGet]
         public async Task<Dictionary<string, NavItem>> Templates(string id = null)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(NavigationController))} {nameof(Templates)} {id}");
             // Key = "This.That.The.Other"
             // id = null
             // id = "This"

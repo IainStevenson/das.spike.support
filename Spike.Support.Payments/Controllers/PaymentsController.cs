@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using Spike.Support.Payments.Models;
-using Spike.Support.Shared;
 using Spike.Support.Shared.Communication;
 using Spike.Support.Shared.Models;
 
@@ -40,7 +39,7 @@ namespace Spike.Support.Payments.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             _identity = _identityHandler.GetIdentity(Request);
-            Debug.WriteLine($"{(nameof(PaymentsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(PaymentsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
                                               SupportServices.Portal, _identity,
@@ -52,12 +51,14 @@ namespace Spike.Support.Payments.Controllers
         [Route("payments")]
         public ActionResult Index()
         {
+            Debug.WriteLine($"App-Debug: {(nameof(PaymentsController))} {nameof(Index)}");
             return View("payments", _paymentsViewModels);
         }
 
         [Route("payments/{id:guid}")]
         public ActionResult Index(int id)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(PaymentsController))} {nameof(Index)} {id}");
             var paymentsViewModel = new List<PaymentViewModel>
             {
                 _paymentsViewModels.Payments.FirstOrDefault(x => x.PaymentId == id)
@@ -71,6 +72,7 @@ namespace Spike.Support.Payments.Controllers
         [Route("payments/accounts/{accountId:int}/{direction?}")]
         public ActionResult AccountPayments(int accountId, string direction = null)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(PaymentsController))} {nameof(Index)} {accountId} {direction}");
             var paymentsViewModel = new PaymentsViewModel
             {
                 Payments = _paymentsViewModels.Payments

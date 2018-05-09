@@ -31,7 +31,7 @@ namespace Spike.Support.Accounts.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             _identity = (Request.Cookies[_cookieName] ?? new HttpCookie(_cookieName)).Value ?? _identity;
-            Debug.WriteLine($"{(nameof(ChallengeController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
 
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(

@@ -29,7 +29,7 @@ namespace Spike.Support.Portal.Controllers
         public override Task<HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, CancellationToken cancellationToken)
         {
             _identity = _identityHandler.GetIdentity(new HttpRequestWrapper(HttpContext.Current.Request));
-            Debug.WriteLine($"{(nameof(ChallengeController))} (API) {nameof(ExecuteAsync)} Recieves Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} (API) {nameof(ExecuteAsync)} Recieves Identity {_identity}");
             return base.ExecuteAsync(controllerContext, cancellationToken);
         }
 
@@ -38,6 +38,7 @@ namespace Spike.Support.Portal.Controllers
         public async Task<bool> Required(string entityType, string identifier)
         {
 
+            Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} {nameof(Required)} {entityType}, {identifier}");
 
             var item = MvcApplication.SupportAgentChallenges.Values.FirstOrDefault(x =>
                 x.EntityType == entityType
@@ -52,6 +53,7 @@ namespace Spike.Support.Portal.Controllers
         [Route("api/challenge/passed/{entityType}/{identifier}")]
         public async Task<bool> Passed(string entityType, string identifier)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} {nameof(Passed)} {entityType}, {identifier}");
             var item = new SupportAgentChallenge
             {
                 EntityType = entityType,
@@ -66,6 +68,7 @@ namespace Spike.Support.Portal.Controllers
         [Route("api/challenge/refresh/{entityType}/{identifier}")]
         public async Task<bool> Refresh(string entityType, string identifier)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} {nameof(Refresh)} {entityType}, {identifier}");
 
             var item = MvcApplication.SupportAgentChallenges
                     .FirstOrDefault(x => x.Value.EntityType == entityType 
@@ -81,6 +84,7 @@ namespace Spike.Support.Portal.Controllers
         [Route("api/challenge/clear")]
         public async Task<bool> Clear()
         {
+            Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} {nameof(Clear)}");
             var itemList = MvcApplication.SupportAgentChallenges.Where(
                 f => f.Value.Identity.Equals(_identity, StringComparison.InvariantCultureIgnoreCase)
             ).Select(x => x.Key).ToList();

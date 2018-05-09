@@ -27,20 +27,22 @@ namespace Spike.Support.Portal.Controllers
         protected override void Execute(RequestContext requestContext)
         {
             _identity = _identityHandler.GetIdentity(requestContext.HttpContext.Request);
-            Debug.WriteLine($"{(nameof(ResourcesController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(ResourcesController))} {nameof(Execute)} Recieves Identity {_identity}");
             base.Execute(requestContext);
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             _identity = _identityHandler.GetIdentity(HttpContext.Request);
-            Debug.WriteLine($"{(nameof(ResourcesController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(ResourcesController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             base.OnActionExecuting(filterContext);
         }
 
         [Route("resources/{*path}")]
         public async Task<MvcHtmlString> Get(string path)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(ResourcesController))} {nameof(Get)} {path}");
+
             var source = path.Split('/').FirstOrDefault();
 
             if (string.IsNullOrWhiteSpace(source)) return new MvcHtmlString(string.Empty);

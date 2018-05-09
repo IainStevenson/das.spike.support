@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Configuration;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Spike.Support.Portal.Models;
@@ -24,7 +25,7 @@ namespace Spike.Support.Portal.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             _identity = "test.User@this.domain"; // simulate a Signed in user   
-            Debug.WriteLine($"{(nameof(ViewsController))} {nameof(OnActionExecuting)} Sets Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(ViewsController))} {nameof(OnActionExecuting)} Sets Identity {_identity}");
 
             base.OnActionExecuting(filterContext);
         }
@@ -32,6 +33,8 @@ namespace Spike.Support.Portal.Controllers
         [Route("")]
         public async Task<ActionResult> Index()
         {
+            Debug.WriteLine($"App-Debug: {(nameof(ResourcesController))} {nameof(Index)} - Entry point");
+
             // OK.... here we go.
             // Make download calls to Users, Accounts, Accounts will ask for a Download roundtrip for Payements.. by Account
             var usersView = await _siteConnector.DownloadView(SupportServices.Users, _identity, "users");
@@ -48,6 +51,7 @@ namespace Spike.Support.Portal.Controllers
         [Route("views/{*path}")]
         public async Task<ActionResult> Index(string path)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(ResourcesController))} {nameof(Index)} {path}");
             if (string.IsNullOrWhiteSpace(path)) return new HttpNotFoundResult();
             
             var indexViewModel = new IndexViewModel();
@@ -63,9 +67,10 @@ namespace Spike.Support.Portal.Controllers
 
 
         [Route("endcall/{identity?}")]
-        public async Task<ActionResult> EndCall(string identity)
+        public async Task<ActionResult> EndCall()
         {
-            await _siteConnector.Challenge(_identity, $"api/challenge/clear/{identity ?? "anonymous"}");
+            Debug.WriteLine($"App-Debug: {(nameof(ResourcesController))} {nameof(EndCall)}");
+            await _siteConnector.Challenge(_identity, "api/challenge/clear");
 
             return View("EndCall", new EndCallViewModel());
         }

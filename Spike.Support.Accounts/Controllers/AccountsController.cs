@@ -39,11 +39,14 @@ namespace Spike.Support.Accounts.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             _identity = (Request.Cookies[_cookieName]?? new HttpCookie(_cookieName)).Value?? _identity;
-            Debug.WriteLine($"{(nameof(AccountsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
                                               SupportServices.Portal, _identity,
                                               "api/navigation/templates") ?? new Dictionary<string, NavItem>();
+
             base.OnActionExecuting(filterContext);
         }
 
@@ -51,6 +54,7 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts")]
         public ActionResult AccountList()
         {
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             return View("accounts", _accountViewModels);
         }
 
@@ -58,6 +62,7 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}")]
         public ActionResult AccountDetail(int id)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(AccountDetail)} {id}");
             var accountDetailsViewModel = new AccountDetailViewModel
             {
                 Account = _accountViewModels.Accounts.FirstOrDefault(x => x.AccountId == id)
@@ -91,6 +96,7 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}/payments/in")]
         public async Task<ActionResult> AccountPaymentsIn(int id, int tries = 1)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(AccountPaymentsIn)} {id} {tries}");
             var entityType = "Account.Payments";
             
             if (await _siteConnector.Challenge(_identity, $"api/challenge/required/{entityType}/{id}"))
@@ -138,6 +144,7 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}/payments/out")]
         public async Task<ActionResult> AccountPaymentsOut(int id, int tries = 1)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(AccountPaymentsOut)} {id} {tries}");
             var entityType = "Account.Payments";
             
             if (await _siteConnector.Challenge(_identity, $"api/challenge/required/{entityType}/{id}"))
@@ -185,6 +192,7 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}/payments")]
         public async Task<ActionResult> AccountPayments(int id, int tries = 1)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(AccountPayments)} {id} {tries}");
             var entityType = "Account.Payments";
             
             if (await _siteConnector.Challenge(
@@ -236,6 +244,7 @@ namespace Spike.Support.Accounts.Controllers
         [Route("accounts/{id:int}/users")]
         public async Task<ActionResult> AccountUsers(int id)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(AccountsController))} {nameof(AccountUsers)} {id}");
             var usersView =
                 await _siteConnector.DownloadView(
                     SupportServices.Portal, _identity,

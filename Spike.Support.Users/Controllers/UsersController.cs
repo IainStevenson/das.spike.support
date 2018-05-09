@@ -40,7 +40,7 @@ namespace Spike.Support.Users.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             _identity = _identityHandler.GetIdentity(Request);
-            Debug.WriteLine($"{(nameof(UsersController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+            Debug.WriteLine($"App-Debug: {(nameof(UsersController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
                                               SupportServices.Portal, 
@@ -53,12 +53,15 @@ namespace Spike.Support.Users.Controllers
         [Route("users")]
         public ActionResult Users()
         {
+            Debug.WriteLine($"App-Debug: {(nameof(UsersController))} {nameof(Users)}");
+
             return View("users", _usersViewModel);
         }
 
         [Route("users/{id:int}")]
         public ActionResult User(int id)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(UsersController))} {nameof(User)} {id}");
             if (!NavItem.IsAResourceRequest(Request))
             {
                 var menuSelector = "User";
@@ -88,6 +91,7 @@ namespace Spike.Support.Users.Controllers
         [Route("users/{id:int}/accounts")]
         public ActionResult UserAccounts(int id)
         {
+            Debug.WriteLine($"App-Debug: {(nameof(UsersController))} {nameof(UserAccounts)} {id}");
             if (!NavItem.IsAResourceRequest(Request))
             {
                 var menuSelector = "User";
