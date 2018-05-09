@@ -68,6 +68,8 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\CookieIdentityHandler.cs" />
+    <Compile Include="Communication\IIdentityHandler.cs" />
     <Compile Include="EmbeddedResourceFile.cs" />
     <Compile Include="EmbeddedResourceViewPathProvider.cs" />
     <Compile Include="Communication\ISiteConnector.cs" />

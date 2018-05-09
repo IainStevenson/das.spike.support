@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared.Communication;
@@ -11,15 +13,32 @@ namespace Spike.Support.Accounts.Controllers
 {
     public class ChallengeController : Controller
     {
+        private readonly string _cookieDomain = ".localhost"; // change to real domain for deployment
+        private readonly string _cookieName = "IdentityContextCookie";
+        private readonly string _defaultIdentity = "anonymous";
+        private readonly IIdentityHandler _identityHandler;
+        private readonly int _maxChallengeTries = 3;
         private readonly ISiteConnector _siteConnector;
+        private string _menuType;
+        private string _identity;
 
         public ChallengeController()
         {
             _siteConnector = new SiteConnector();
+            _identityHandler = new CookieIdentityHandler(_cookieName, _cookieDomain, _defaultIdentity);
         }
-        private readonly int _maxChallengeTries = 3;
-        private string _menuType;
 
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            _identity = (Request.Cookies[_cookieName] ?? new HttpCookie(_cookieName)).Value ?? _identity;
+            Debug.WriteLine($"{(nameof(ChallengeController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
+
+            if (!MvcApplication.NavItems.Any())
+                MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
+                                              SupportServices.Portal, _identity,
+                                              "api/navigation/templates") ?? new Dictionary<string, NavItem>();
+            base.OnActionExecuting(filterContext);
+        }
         private string GetChallengeForEntityType(string entityType)
         {
             return $"Challenge for {entityType} ";
@@ -32,10 +51,9 @@ namespace Spike.Support.Accounts.Controllers
                 "accounts/challenge/response").AbsoluteUri;
 
             if (!MvcApplication.Challenges.ContainsKey(challengeId))
-               return  RedirectToAction("Failed", "Challenge");
+                return RedirectToAction("Failed", "Challenge");
 
             var model = MvcApplication.Challenges[challengeId];
-
 
 
             model.Challenge = GetChallengeForEntityType(model.EntityType);
@@ -46,7 +64,7 @@ namespace Spike.Support.Accounts.Controllers
             if (NavItem.IsAResourceRequest(Request))
                 return View(model);
 
-            var identifiers = new Dictionary<string, string> { { "accountId", $"{model.Identifier}" } };
+            var identifiers = new Dictionary<string, string> {{"accountId", $"{model.Identifier}"}};
 
             var navItems = MvcApplication.NavItems
                 .Where(x => x.Key.StartsWith($"{model.MenuType}"))
@@ -63,18 +81,24 @@ namespace Spike.Support.Accounts.Controllers
             ViewBag.Menu = Menu.ConfigureMenu(
                 menuNavItems,
                 model.EntityType,
-                new List<string> { model.EntityType
+                new List<string>
+                {
+                    model.EntityType
                 },
                 MenuOrientations.Vertical);
 
             return View(model);
         }
+
         /// <summary>
-        /// Processes the response, if its nothing or wrong the tries is incremented and passed back
-        /// If Tries > MaxTries then the challenge is abanondeoned and passed back to the portals Challenge failed route.
+        ///     Processes the response, if its nothing or wrong the tries is incremented and passed back
+        ///     If Tries > MaxTries then the challenge is abanondeoned and passed back to the portals Challenge failed route.
         /// </summary>
         /// <param name="formProperties">The form properties collection posted back from the form on the Portal site</param>
-        /// <returns>A redirect to the original request on success, a redirect to ask again of not exceeded retries, else a redirect to access denied</returns>
+        /// <returns>
+        ///     A redirect to the original request on success, a redirect to ask again of not exceeded retries, else a
+        ///     redirect to access denied
+        /// </returns>
         [Route("accounts/challenge/response")]
         //[ValidateAntiForgeryToken]
         [HttpPost]
@@ -101,12 +125,12 @@ namespace Spike.Support.Accounts.Controllers
                     var uri = new Uri(_siteConnector.Services[SupportServices.Portal], failedUri).AbsoluteUri;
                     return Redirect(uri);
                 }
+
                 model.Message = $"Please try again";
                 return ReturnToChallenge(model);
             }
 
-            await _siteConnector.Challenge(
-                    $"api/challenge/passed/{model.EntityType}/{model.Identifier}/{model.Identity}");
+            await _siteConnector.Challenge(_identity?? model.Identity, $"api/challenge/passed/{model.EntityType}/{model.Identifier}");
             MvcApplication.Challenges.Remove(model.ChallengeId);
             return Redirect(model.ReturnTo);
         }
@@ -127,7 +151,7 @@ namespace Spike.Support.Accounts.Controllers
 
             var model = MvcApplication.Challenges[challengeId];
 
-            var identifiers = new Dictionary<string, string> { { "accountId", $"{model.Identifier}" } };
+            var identifiers = new Dictionary<string, string> {{"accountId", $"{model.Identifier}"}};
 
             var navItems = MvcApplication.NavItems
                 .Where(x => x.Key.StartsWith($"{model.MenuType}"))
@@ -144,9 +168,12 @@ namespace Spike.Support.Accounts.Controllers
             ViewBag.Menu = Menu.ConfigureMenu(
                 menuNavItems,
                 model.EntityType,
-                new List<string> { model.EntityType
+                new List<string>
+                {
+                    model.EntityType
                 },
                 MenuOrientations.Vertical);
+
             return View(model);
         }
     }

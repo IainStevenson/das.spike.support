@@ -12,14 +12,16 @@ namespace Spike.Support.Shared.Communication
     public class SiteConnector : ISiteConnector
     {
         private readonly Dictionary<string, object> _customHeaders = new Dictionary<string, object>();
-        private string _cookieName = "IdentityContextCookie";
-        private string _cookeValue = "not-anonymous";
+        private readonly IIdentityHandler _identityHandler;
+        private readonly string _cookieName = "IdentityContextCookie";
+        private readonly string _cookieDomain = ".localhost";  // change to real domain for deployment
+        private readonly string _defaultIdentity = "anonymous";
 
-        public void SetCookie(string name, string value)
+        public SiteConnector()
         {
-            _cookieName = name;
-            _cookeValue = value;
+            _identityHandler = new CookieIdentityHandler(_cookieName, _cookieDomain, _defaultIdentity);
         }
+
 
         public Dictionary<SupportServices, Uri> Services { get; } = new Dictionary<SupportServices, Uri>
         {
@@ -29,28 +31,24 @@ namespace Spike.Support.Shared.Communication
             {SupportServices.Payments, new Uri("https://localhost:44345/")}
         };
 
-        public async Task<MvcHtmlString> DownloadView(SupportServices serviceName, string uri)
+        public async Task<MvcHtmlString> DownloadView(SupportServices serviceName, string identity, string uri)
         {
             var baseUrl = Services[serviceName];
-
-            return await DownloadView(baseUrl, uri);
+            return await DownloadView(baseUrl, identity, uri);
         }
 
-        public T GetMenuTemplates<T>(SupportServices serviceName, string uri)
+        public T GetMenuTemplates<T>(SupportServices serviceName, string identity, string uri)
         {
-            
             var baseAddress = Services[serviceName];
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+            var handler = new HttpClientHandler() { CookieContainer = new CookieContainer() };
+            _identityHandler.SetIdentity(handler, baseAddress, identity);
             var client = new HttpClient(handler) { BaseAddress = baseAddress };
-            cookieContainer.Add(baseAddress, new Cookie(_cookieName, _cookeValue));
 
             AddCustomHeaders(client);
 
             string content = null;
             try
             {
-
                 var response = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
                 if (response.IsSuccessStatusCode) content = response.Content.ReadAsStringAsync().Result;
             }
@@ -62,7 +60,7 @@ namespace Spike.Support.Shared.Communication
             return content != null ? JsonConvert.DeserializeObject<T>(content) : default(T);
         }
 
-        public void SetHeader(string header, object value)
+        public void SetCustomHeader(string header, object value)
         {
             if (_customHeaders.ContainsKey(header))
                 _customHeaders[header] = value;
@@ -70,20 +68,17 @@ namespace Spike.Support.Shared.Communication
                 _customHeaders.Add(header, value);
         }
 
-        public void ClearHeader(string header)
+        public void ClearCustomHeaders(string header)
         {
             if (_customHeaders.ContainsKey(header)) _customHeaders.Remove(header);
         }
 
-        public async Task<bool> Challenge(string uri)
+        public async Task<bool> Challenge(string identity, string uri)
         {
             var baseAddress = Services[SupportServices.Portal];
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+            var handler = new HttpClientHandler() { CookieContainer = new CookieContainer() };
+            _identityHandler.SetIdentity(handler, baseAddress, identity);
             var client = new HttpClient(handler) { BaseAddress = baseAddress };
-            cookieContainer.Add(baseAddress, new Cookie(_cookieName, _cookeValue));
-
-            
 
             try
             {
@@ -102,13 +97,12 @@ namespace Spike.Support.Shared.Communication
             return true;
         }
 
-        private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string uri)
+        private async Task<MvcHtmlString> DownloadView(Uri resourceAddress, string identity, string uri)
         {
             var baseAddress = resourceAddress;
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler() { CookieContainer = cookieContainer };
+            var handler = new HttpClientHandler() { CookieContainer = new CookieContainer() };
+            _identityHandler.SetIdentity(handler, baseAddress, identity);
             var client = new HttpClient(handler) { BaseAddress = baseAddress };
-            cookieContainer.Add(baseAddress, new Cookie(_cookieName, _cookeValue));
 
             AddCustomHeaders(client);
             string content = null;

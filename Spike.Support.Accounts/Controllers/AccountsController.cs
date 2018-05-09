@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.ApplicationInsights.DataContracts;
 using Spike.Support.Accounts.Models;
 using Spike.Support.Shared.Communication;
 using Spike.Support.Shared.Models;
 
 namespace Spike.Support.Accounts.Controllers
 {
-
-
     public class AccountsController : Controller
     {
         private readonly AccountsViewModel _accountViewModels = new AccountsViewModel
@@ -36,15 +34,15 @@ namespace Spike.Support.Accounts.Controllers
         }
 
         private string _identity = "anonymous";
-        private static string _identityContextCookieName = "IdentityContextCookie";
+        private static string _cookieName = "IdentityContextCookie";
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            _identity = (Request.Cookies[_identityContextCookieName]?? new HttpCookie(_identityContextCookieName)).Value?? _identity;
-
+            _identity = (Request.Cookies[_cookieName]?? new HttpCookie(_cookieName)).Value?? _identity;
+            Debug.WriteLine($"{(nameof(AccountsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
-                                              SupportServices.Portal,
+                                              SupportServices.Portal, _identity,
                                               "api/navigation/templates") ?? new Dictionary<string, NavItem>();
             base.OnActionExecuting(filterContext);
         }
@@ -94,17 +92,15 @@ namespace Spike.Support.Accounts.Controllers
         public async Task<ActionResult> AccountPaymentsIn(int id, int tries = 1)
         {
             var entityType = "Account.Payments";
-            var identityName = GetIdentityOfCaller();
-
-            if (await _siteConnector.Challenge(
-                $"api/challenge/required/{entityType}/{id}/{identityName}"))
+            
+            if (await _siteConnector.Challenge(_identity, $"api/challenge/required/{entityType}/{id}"))
             {
                 var model = new ChallengeViewModel
                 {
                     MenuType = _menuType,
                     EntityType = entityType,
                     Identifier = $"{id}",
-                    Identity = identityName,
+                    Identity = _identity,
                     ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/int",
                     Tries = tries,
                 };
@@ -112,10 +108,10 @@ namespace Spike.Support.Accounts.Controllers
                 return RedirectToAction("Challenge", "Challenge", new { model.ChallengeId });
             }
 
-            await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+            await _siteConnector.Challenge(_identity, $"api/challenge/refresh/{entityType}/{id}");
 
             var paymentsView =
-                await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/in");
+                await _siteConnector.DownloadView(SupportServices.Portal, _identity, $"resources/payments/accounts/{id}/in");
 
             var accountPaymentsViewModel = new AccountPaymentsViewModel
             {
@@ -143,17 +139,15 @@ namespace Spike.Support.Accounts.Controllers
         public async Task<ActionResult> AccountPaymentsOut(int id, int tries = 1)
         {
             var entityType = "Account.Payments";
-            var identityName = GetIdentityOfCaller();
-
-            if (await _siteConnector.Challenge(
-                $"api/challenge/required/{entityType}/{id}/{identityName}"))
+            
+            if (await _siteConnector.Challenge(_identity, $"api/challenge/required/{entityType}/{id}"))
             {
                 var model = new ChallengeViewModel
                 {
                     MenuType = _menuType,
                     EntityType = entityType,
                     Identifier = $"{id}",
-                    Identity = identityName,
+                    Identity = _identity,
                     ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments/out",
                     Tries = tries,
                 };
@@ -161,10 +155,10 @@ namespace Spike.Support.Accounts.Controllers
                 return RedirectToAction("Challenge", "Challenge", new { model.ChallengeId });
             }
 
-            await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+            await _siteConnector.Challenge(_identity, $"api/challenge/refresh/{entityType}/{id}");
 
             var paymentsView =
-                await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}/out");
+                await _siteConnector.DownloadView(SupportServices.Portal, _identity, $"resources/payments/accounts/{id}/out");
 
             var accountPaymentsViewModel = new AccountPaymentsViewModel
             {
@@ -192,17 +186,16 @@ namespace Spike.Support.Accounts.Controllers
         public async Task<ActionResult> AccountPayments(int id, int tries = 1)
         {
             var entityType = "Account.Payments";
-            var identityName = GetIdentityOfCaller();
-
+            
             if (await _siteConnector.Challenge(
-                $"api/challenge/required/{entityType}/{id}/{identityName}"))
+                _identity, $"api/challenge/required/{entityType}/{id}"))
             {
                 var model = new ChallengeViewModel
                 {
                     MenuType = _menuType,
                     EntityType = entityType,
                     Identifier = $"{id}",
-                    Identity = identityName,
+                    Identity = _identity,
                     ReturnTo = $"{_siteConnector.Services[SupportServices.Portal]}views/accounts/{id}/payments",
                     Tries = tries
                 };
@@ -210,10 +203,10 @@ namespace Spike.Support.Accounts.Controllers
                 return RedirectToAction("Challenge", "Challenge", new { model.ChallengeId });
             }
 
-            await _siteConnector.Challenge($"api/challenge/refresh/{entityType}/{id}/{identityName}");
+            await _siteConnector.Challenge(_identity, $"api/challenge/refresh/{entityType}/{id}");
 
             var paymentsView =
-                await _siteConnector.DownloadView(SupportServices.Portal, $"resources/payments/accounts/{id}");
+                await _siteConnector.DownloadView(SupportServices.Portal, _identity, $"resources/payments/accounts/{id}");
 
             var accountPaymentsViewModel = new AccountPaymentsViewModel
             {
@@ -238,17 +231,14 @@ namespace Spike.Support.Accounts.Controllers
             return View("_accountPayments", accountPaymentsViewModel);
         }
 
-        private string GetIdentityOfCaller()
-        {
-            return _identity;
-        }
+       
 
         [Route("accounts/{id:int}/users")]
         public async Task<ActionResult> AccountUsers(int id)
         {
             var usersView =
                 await _siteConnector.DownloadView(
-                    SupportServices.Portal,
+                    SupportServices.Portal, _identity,
                     $"resources/users/{id}/accounts/");
 
             var accountUsersViewModel = new AccountUsersViewModel

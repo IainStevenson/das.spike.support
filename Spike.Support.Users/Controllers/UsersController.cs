@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using Spike.Support.Shared;
@@ -23,17 +24,27 @@ namespace Spike.Support.Users.Controllers
                 Created = DateTime.Now.AddMonths(-x)
             }).ToList()
         };
+        private readonly string _cookieName = "IdentityContextCookie";
+        private readonly string _cookieDomain = ".localhost";  // change to real domain for deployment
+        private readonly string _defaultIdentity = "anonymous";
+        private readonly IIdentityHandler _identityHandler;
+        private string _identity;
 
         public UsersController()
         {
             _siteConnector = new SiteConnector();
+            _identityHandler = new CookieIdentityHandler(_cookieName, _cookieDomain, _defaultIdentity);
+
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            _identity = _identityHandler.GetIdentity(Request);
+            Debug.WriteLine($"{(nameof(UsersController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
-                                              SupportServices.Portal,
+                                              SupportServices.Portal, 
+                                              _identity,
                                               "api/navigation/templates") ?? new Dictionary<string, NavItem>();
             base.OnActionExecuting(filterContext);
         }

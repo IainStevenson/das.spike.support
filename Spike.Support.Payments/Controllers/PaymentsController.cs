@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using Spike.Support.Payments.Models;
@@ -13,10 +14,12 @@ namespace Spike.Support.Payments.Controllers
     {
         private readonly PaymentsViewModel _paymentsViewModels;
         private readonly ISiteConnector _siteConnector;
+        private string _identity;
 
         public PaymentsController()
         {
             _siteConnector = new SiteConnector();
+            _identityHandler = new CookieIdentityHandler(_cookieName, _cookieDomain, _defaultIdentity);
             _paymentsViewModels = new PaymentsViewModel
             {
                 Payments = Enumerable.Range(1, 1000).Select(x =>
@@ -30,13 +33,17 @@ namespace Spike.Support.Payments.Controllers
                     }).ToList()
             };
         }
-
-
+        private readonly string _cookieName = "IdentityContextCookie";
+        private readonly string _cookieDomain = ".localhost";  // change to real domain for deployment
+        private readonly string _defaultIdentity = "anonymous";
+        private readonly IIdentityHandler _identityHandler;
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            _identity = _identityHandler.GetIdentity(Request);
+            Debug.WriteLine($"{(nameof(PaymentsController))} {nameof(OnActionExecuting)} Recieves Identity {_identity}");
             if (!MvcApplication.NavItems.Any())
                 MvcApplication.NavItems = _siteConnector.GetMenuTemplates<Dictionary<string, NavItem>>(
-                                              SupportServices.Portal,
+                                              SupportServices.Portal, _identity,
                                               "api/navigation/templates") ?? new Dictionary<string, NavItem>();
             base.OnActionExecuting(filterContext);
         }
