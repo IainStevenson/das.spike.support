@@ -19,7 +19,6 @@ namespace Spike.Support.Accounts.Controllers
         private readonly IIdentityHandler _identityHandler;
         private readonly int _maxChallengeTries = 3;
         private readonly ISiteConnector _siteConnector;
-        private string _menuType;
         private string _identity;
 
         public ChallengeController()

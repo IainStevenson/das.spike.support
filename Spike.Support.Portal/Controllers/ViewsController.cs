@@ -13,7 +13,7 @@ namespace Spike.Support.Portal.Controllers
         private readonly ISiteConnector _siteConnector;
         private readonly string _cookieName = "IdentityContextCookie";
         private readonly string _cookieDomain = ".localhost";  // change to real domain for deployment
-        private readonly string _defaultIdentity = "anonymous";
+        private readonly string _defaultIdentity = "test.user@there.com|Tier1,Tier2";
         private readonly IIdentityHandler _identityHandler;
         private string _identity;
         public ViewsController()
@@ -24,7 +24,7 @@ namespace Spike.Support.Portal.Controllers
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            _identity = "test.User@this.domain"; // simulate a Signed in user   
+            _identity = _defaultIdentity; // simulate a Signed in user   
             Debug.WriteLine($"App-Debug: {(nameof(ViewsController))} {nameof(OnActionExecuting)} Sets Identity {_identity}");
 
             base.OnActionExecuting(filterContext);

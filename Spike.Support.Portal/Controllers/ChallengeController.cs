@@ -20,6 +20,7 @@ namespace Spike.Support.Portal.Controllers
         private readonly string _cookieDomain = ".localhost";  // change to real domain for deployment // change to real domain for deployment
         private readonly string _defaultIdentity = "anonymous";
         private string _identity;
+        private string[] _roles;
 
         public ChallengeController()
         {
@@ -30,6 +31,7 @@ namespace Spike.Support.Portal.Controllers
         {
             _identity = _identityHandler.GetIdentity(new HttpRequestWrapper(HttpContext.Current.Request));
             Debug.WriteLine($"App-Debug: {(nameof(ChallengeController))} (API) {nameof(ExecuteAsync)} Recieves Identity {_identity}");
+
             return base.ExecuteAsync(controllerContext, cancellationToken);
         }
 

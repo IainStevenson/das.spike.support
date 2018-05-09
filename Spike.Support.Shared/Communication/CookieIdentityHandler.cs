@@ -20,7 +20,8 @@ namespace Spike.Support.Shared.Communication
 
         public string GetIdentity(HttpRequestBase request)
         {
-            return (request.Cookies[_cookieName] ?? new HttpCookie(_cookieName, null)).Value?? _defaultIdentity;
+            return HttpContext.Current.Server.UrlDecode(
+                        (request.Cookies[_cookieName] ?? new HttpCookie(_cookieName, null)).Value?? _defaultIdentity);
         }
 
         public void SetIdentity(HttpClientHandler handler, Uri baseAddress, string cookieValue)
@@ -30,7 +31,8 @@ namespace Spike.Support.Shared.Communication
                 handler.CookieContainer = new CookieContainer();
             }
 
-            handler.CookieContainer.Add(baseAddress, new Cookie(_cookieName, cookieValue)
+            var value = HttpContext.Current.Server.UrlEncode(cookieValue);
+            handler.CookieContainer.Add(baseAddress, new Cookie(_cookieName, value)
             {
                 Domain = _cookieDomain, HttpOnly = true, Secure = true, 
             });
